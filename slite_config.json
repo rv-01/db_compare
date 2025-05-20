@@ -1,0 +1,11 @@
+{
+    "source_db": {
+        "path": "prod.db"
+    },
+    "target_db": {
+        "path": "cob.db"
+    },
+    "table_name": "employees",
+    "batch_size": 1000,
+    "max_threads": 4
+}

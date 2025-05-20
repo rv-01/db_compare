@@ -1,0 +1,22 @@
+{
+  "source_db": {
+    "username": "src_user",
+    "password": "src_pass",
+    "host": "src-host.example.com",
+    "port": 1521,
+    "service": "ORCLPDB1",
+    "schema": "SRC_SCHEMA"       /* optional: defaults to username.upper() if omitted */
+  },
+  "target_db": {
+    "username": "tgt_user",
+    "password": "tgt_pass",
+    "host": "tgt-host.example.com",
+    "port": 1521,
+    "service": "ORCLPDB1",
+    "schema": "TGT_SCHEMA"       /* optional */
+  },
+  "source_table_name": "ORDERS",        /* table to compare in source */
+  "target_table_name": "ORDERS",        /* table to compare in target */
+  "batch_size": 5000,                   /* rows per page */
+  "max_threads": 8                      /* parallel threads */
+}

@@ -1,0 +1,19 @@
+{
+    "source_db": {
+        "username": "user_prod",
+        "password": "password_prod",
+        "host": "prod-cluster.example.com",
+        "port": 1521,
+        "service": "prod_service"
+    },
+    "target_db": {
+        "username": "user_cob",
+        "password": "password_cob",
+        "host": "cob-cluster.example.com",
+        "port": 1521,
+        "service": "cob_service"
+    },
+    "table_name": "employees",
+    "batch_size": 1000,
+    "max_threads": 4
+}
