@@ -1,0 +1,143 @@
+# Multi-Database Table Comparison Configuration File
+# Oracle-to-Oracle Configuration Example
+
+# Source Database Configuration (Oracle)
+source_database:
+  db_type: "oracle"
+  host: "source-oracle-db.example.com"
+  port: 1521
+  database: "ORCL"  # Service name for Oracle
+  username: "source_user"
+  password: "source_password"
+  # Optional additional parameters
+  additional_params:
+    encoding: "UTF-8"
+    nencoding: "UTF-8"
+
+# Target Database Configuration (Oracle)
+target_database:
+  db_type: "oracle"
+  host: "target-oracle-db.example.com"
+  port: 1521
+  database: "ORCL"  # Service name for Oracle
+  username: "target_user"
+  password: "target_password"
+  additional_params:
+    encoding: "UTF-8"
+    nencoding: "UTF-8"
+
+# Audit Configuration
+audit:
+  audit_file: "oracle_table_comparison_audit.log"
+
+# Processing Configuration
+max_workers: 4  # Number of parallel processes (default: CPU count)
+
+# Tables to Compare
+tables:
+  # Example 1: Employee table with simple primary key
+  - table_name: "EMPLOYEES"
+    primary_key: ["EMPLOYEE_ID"]
+    chunk_size: 10000
+    # columns: null  # null means all columns will be compared
+    # where_clause: null  # null means no filtering
+
+  # Example 2: Order items with composite primary key
+  - table_name: "ORDER_ITEMS"
+    primary_key: ["ORDER_ID", "ITEM_ID"]
+    chunk_size: 5000
+    # Specify only certain columns to compare
+    columns: ["ORDER_ID", "ITEM_ID", "PRODUCT_ID", "QUANTITY", "UNIT_PRICE", "TOTAL_PRICE", "STATUS"]
+    # Optional: filter rows to compare
+    where_clause: "STATUS IN ('ACTIVE', 'PENDING')"
+
+  # Example 3: Customer table with date filtering
+  - table_name: "CUSTOMERS"
+    primary_key: ["CUSTOMER_ID"]
+    chunk_size: 8000
+    columns: ["CUSTOMER_ID", "FIRST_NAME", "LAST_NAME", "EMAIL", "PHONE", "CREATED_DATE", "STATUS"]
+    where_clause: "CREATED_DATE >= DATE '2024-01-01' AND STATUS = 'ACTIVE'"
+
+  # Example 4: Transaction log with time-based partitioning
+  - table_name: "TRANSACTION_LOG"
+    primary_key: ["TRANSACTION_ID"]
+    chunk_size: 3000  # Smaller chunks for large tables
+    columns: ["TRANSACTION_ID", "USER_ID", "TRANSACTION_TYPE", "AMOUNT", "CURRENCY", "TRANSACTION_DATE", "STATUS"]
+    where_clause: "TRANSACTION_DATE >= TRUNC(SYSDATE) - 30"  # Last 30 days only
+
+  # Example 5: Product catalog
+  - table_name: "PRODUCTS"
+    primary_key: ["PRODUCT_ID"]
+    chunk_size: 15000
+    # Compare all columns except audit fields
+    columns: ["PRODUCT_ID", "PRODUCT_NAME", "CATEGORY_ID", "PRICE", "DESCRIPTION", "STOCK_QUANTITY", "STATUS"]
+    where_clause: "STATUS != 'DELETED'"
+
+  # Example 6: Large audit table with specific filtering
+  - table_name: "AUDIT_TRAIL"
+    primary_key: ["AUDIT_ID"]
+    chunk_size: 2000  # Very small chunks for memory efficiency
+    columns: ["AUDIT_ID", "TABLE_NAME", "OPERATION", "USER_ID", "TIMESTAMP", "OLD_VALUES", "NEW_VALUES"]
+    where_clause: "TIMESTAMP >= SYSDATE - INTERVAL '7' DAY AND OPERATION IN ('INSERT', 'UPDATE', 'DELETE')"
+
+  # Example 7: Reference data table
+  - table_name: "LOOKUP_CODES"
+    primary_key: ["CODE_TYPE", "CODE_VALUE"]  # Composite primary key
+    chunk_size: 20000  # Large chunks for small reference tables
+    columns: ["CODE_TYPE", "CODE_VALUE", "DESCRIPTION", "DISPLAY_ORDER", "ACTIVE_FLAG"]
+    where_clause: "ACTIVE_FLAG = 'Y'"
+
+# Oracle-Specific Performance Tuning Notes:
+# 
+# Chunk Size Guidelines:
+# - Small tables (< 100K rows): 10,000 - 20,000
+# - Medium tables (100K - 1M rows): 5,000 - 10,000  
+# - Large tables (1M - 10M rows): 2,000 - 5,000
+# - Very large tables (> 10M rows): 1,000 - 3,000
+#
+# Where Clause Optimization:
+# - Use indexed columns in WHERE clauses for better performance
+# - Consider partitioning for time-based filtering
+# - Use UPPER() for case-insensitive string comparisons
+# - Use DATE literals for date comparisons: DATE '2024-01-01'
+#
+# Column Selection:
+# - Exclude LOB columns (CLOB, BLOB) if not needed for comparison
+# - Exclude computed/generated columns if they might differ due to timing
+# - Include all business-critical columns for data integrity validation
+#
+# Connection Settings:
+# - Ensure both databases have adequate connection pools
+# - Consider using connection pooling for better performance
+# - Set appropriate timeout values for long-running comparisons
+
+# Example alternative configurations for different scenarios:
+
+# Configuration for comparing across different Oracle environments:
+# source_database:
+#   db_type: "oracle"
+#   host: "prod-oracle.company.com"
+#   port: 1521
+#   database: "PROD"
+#   username: "readonly_user"
+#   password: "secure_password"
+#
+# target_database:
+#   db_type: "oracle"
+#   host: "dr-oracle.company.com"  # Disaster Recovery environment
+#   port: 1521
+#   database: "DRPROD"
+#   username: "readonly_user"
+#   password: "secure_password"
+
+# Configuration for Oracle Autonomous Database:
+# source_database:
+#   db_type: "oracle"
+#   host: "your-adb-host.oraclecloud.com"
+#   port: 1522
+#   database: "your_service_name_high"
+#   username: "your_username"
+#   password: "your_password"
+#   additional_params:
+#     wallet_location: "/path/to/wallet"
+#     wallet_password: "wallet_password"
