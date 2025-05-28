@@ -1,0 +1,131 @@
+graph TD
+    A[Start Chunk Processing for SCHEMA.TABLE] --> B[Load Session State]
+    B --> C[Load Existing Checkpoints]
+    C --> D[Calculate Total Chunks Needed]
+    
+    D --> E[Initialize Chunk Loop: i = 0]
+    E --> F{i < total_chunks?}
+    
+    F -->|No| G[All Chunks Processed]
+    F -->|Yes| H{Checkpoint Exists for Chunk i?}
+    
+    H -->|Yes| I[Load Checkpoint Data]
+    H -->|No| J[Execute Source Query]
+    
+    I --> K[Log: Using Cached Chunk i]
+    
+    J --> L[Oracle Source Query with ROWNUM]
+    L --> M{Query Successful?}
+    M -->|No| N[Handle Database Error]
+    M -->|Yes| O[Execute Target Query]
+    
+    O --> P[Oracle Target Query with ROWNUM]
+    P --> Q{Query Successful?}
+    Q -->|No| N
+    Q -->|Yes| R[Process Source Rows]
+    
+    R --> S[Generate MD5 Hash for Each Row]
+    S --> T[Create Source Chunk Dictionary]
+    T --> U[Process Target Rows]
+    U --> V[Generate MD5 Hash for Each Row]
+    V --> W[Create Target Chunk Dictionary]
+    
+    W --> X[Compare Hash Dictionaries]
+    X --> Y[Identify Missing in Target]
+    Y --> Z[Identify Missing in Source]
+    Z --> AA[Identify Different Rows]
+    AA --> BB[Identify Matching Rows]
+    
+    BB --> CC[Create Comparison Result]
+    CC --> DD[Save Chunk Checkpoint]
+    DD --> EE[Log: Processed Chunk i]
+    
+    K --> FF[Aggregate Chunk Results]
+    EE --> FF
+    
+    FF --> GG[Update Progress State]
+    GG --> HH{Interruption Signal?}
+    
+    HH -->|Ctrl+C| II[Save Current State]
+    HH -->|System Error| JJ[Log Error & Save State]
+    HH -->|No| KK[Increment Chunk Counter: i++]
+    
+    KK --> F
+    
+    N --> LL{Retryable Error?}
+    LL -->|Yes| MM[Wait & Retry]
+    LL -->|No| NN[Mark Chunk Failed]
+    
+    MM --> OO{Retry Count < Max?}
+    OO -->|Yes| J
+    OO -->|No| NN
+    
+    NN --> PP[Save Error State]
+    PP --> QQ[Continue to Next Chunk]
+    QQ --> KK
+    
+    G --> RR[Calculate Final Statistics]
+    RR --> SS{Any Differences?}
+    
+    SS -->|Yes| TT[Prepare SQL Generation Data]
+    SS -->|No| UU[Mark Tables as Synchronized]
+    
+    TT --> VV[Generate INSERT Statements]
+    VV --> WW[Generate UPDATE Statements]
+    WW --> XX[Write SQL Files]
+    
+    UU --> YY[Generate Summary Report]
+    XX --> YY
+    YY --> ZZ[Mark Table Complete]
+    ZZ --> AAA[Cleanup Checkpoints]
+    AAA --> BBB[Return Comparison Result]
+    
+    II --> CCC[Display Resume Command]
+    JJ --> DDD[Display Error & Resume Info]
+    
+    %% Subgraph for Oracle-specific operations
+    subgraph "Oracle Database Operations"
+        L
+        P
+        EEE[Oracle ROWNUM Pagination]
+        FFF[Schema-Qualified Queries]
+        GGG[Connection Management]
+        HHH[Error Code Handling]
+    end
+    
+    %% Subgraph for checkpoint management
+    subgraph "Checkpoint System"
+        C
+        I
+        DD
+        III[Session State JSON]
+        JJJ[Chunk Pickle Files]
+        KKK[Progress Tracking]
+    end
+    
+    %% Subgraph for hash processing
+    subgraph "Hash-Based Comparison"
+        S
+        V
+        X
+        LLL[MD5 Row Hashing]
+        MMM[Primary Key Mapping]
+        NNN[Dictionary Comparison]
+    end
+    
+    %% Styling
+    classDef oracleOp fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef checkpoint fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef hashOp fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef interrupt fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef decision fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    
+    class L,P,EEE,FFF,GGG,HHH oracleOp
+    class C,I,DD,III,JJJ,KKK checkpoint
+    class S,V,X,LLL,MMM,NNN hashOp
+    class N,NN,PP,JJ,DDD error
+    class II,CCC interrupt
+    class G,YY,ZZ,AAA,BBB success
+    class F,H,M,Q,HH,LL,OO,SS decision
