@@ -1,0 +1,60 @@
+flowchart TD
+    A[Comparison Operation Running] --> B{Interruption Type}
+    
+    B -->|Network Failure| C[Network Connection Lost]
+    C --> D[Save Current State]
+    D --> E[Display Connection lost at chunk X]
+    E --> F[User Fix network issue]
+    F --> G[Resume with SESSION_ID]
+    G --> H[Load existing checkpoints]
+    H --> I[Continue from chunk X+1]
+    I --> J[Complete successfully]
+    
+    B -->|Database Maintenance| K[Database going offline]
+    K --> L[Save current progress]
+    L --> M[Display DB maintenance detected]
+    M --> N[User Wait for maintenance end]
+    N --> O[Resume with SESSION_ID]
+    O --> P[Reconnect to database]
+    P --> Q[Load chunk checkpoints] 
+    Q --> R[Skip completed chunks]
+    R --> S[Process remaining chunks]
+    S --> T[Complete successfully]
+    
+    B -->|System Crash| U[Application terminates unexpectedly]
+    U --> V[State auto-saved to disk]
+    V --> W[User Restart application]
+    W --> X[Resume with SESSION_ID]
+    X --> Y[Load session state]
+    Y --> Z[Display recovery summary]  
+    Z --> AA[Continue from last checkpoint]
+    AA --> BB[Complete successfully]
+    
+    B -->|Permission Error| CC[ORA-01031 Insufficient privileges]
+    CC --> DD[Mark table as failed]
+    DD --> EE[Save error state]
+    EE --> FF[Continue with other tables]
+    FF --> GG[Some tables complete some failed]
+    GG --> HH[User Fix permissions]
+    HH --> II[Retry with retry-failed flag]
+    II --> JJ[Process only failed tables]
+    JJ --> KK[Skip completed tables]
+    KK --> LL[Complete successfully]
+    
+    B -->|User Interruption| MM[Ctrl+C pressed]
+    MM --> NN[Graceful shutdown initiated]
+    NN --> OO[Save current state]
+    OO --> PP[Display session summary]
+    PP --> QQ{User Decision}
+    
+    QQ -->|Resume All| RR[Resume with SESSION_ID]
+    QQ -->|Specific Table| SS[Resume with table flag]
+    QQ -->|Retry Failed| TT[Resume with retry-failed flag]
+    
+    RR --> UU[Continue all pending tables]
+    SS --> VV[Process only specified table]
+    TT --> WW[Process only failed tables]
+    
+    UU --> XX[Complete successfully]
+    VV --> XX
+    WW --> XX

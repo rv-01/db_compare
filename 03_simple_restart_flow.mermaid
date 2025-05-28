@@ -1,0 +1,52 @@
+flowchart TD
+    Start[Start Oracle Comparator] --> Check{Resume Mode?}
+    
+    Check -->|New| NewSession[Create New Session]
+    Check -->|Resume| LoadSession[Load Session State]
+    
+    NewSession --> InitTables[Initialize All Tables as Pending]
+    LoadSession --> ShowStatus[Show Session Summary]
+    
+    InitTables --> ProcessLoop[Start Table Processing]
+    ShowStatus --> ProcessLoop
+    
+    ProcessLoop --> NextTable{Get Next Pending Table}
+    NextTable -->|Found| TableStart[Start Table: SCHEMA.TABLE]
+    NextTable -->|None| AllDone[All Tables Complete]
+    
+    TableStart --> LoadCheckpoints[Load Existing Checkpoints]
+    LoadCheckpoints --> ChunkLoop[Process Chunks]
+    
+    ChunkLoop --> ChunkCheck{Chunk Already Done?}
+    ChunkCheck -->|Yes| SkipChunk[Skip Use Checkpoint]
+    ChunkCheck -->|No| ProcessChunk[Process New Chunk]
+    
+    SkipChunk --> UpdateProgress[Update Progress]
+    ProcessChunk --> ExtractData[Extract Oracle Data]
+    
+    ExtractData --> GenerateHash[Generate MD5 Hashes]
+    GenerateHash --> CompareHash[Compare Hashes]
+    CompareHash --> SaveCheckpoint[Save Checkpoint]
+    SaveCheckpoint --> UpdateProgress
+    
+    UpdateProgress --> MoreChunks{More Chunks?}
+    MoreChunks -->|Yes| ChunkLoop
+    MoreChunks -->|No| TableDone[Table Complete]
+    
+    TableDone --> GenerateSQL[Generate SQL if Differences]
+    GenerateSQL --> MarkComplete[Mark Table Complete]
+    MarkComplete --> ProcessLoop
+    
+    AllDone --> FinalReport[Generate Final Report]
+    
+    ChunkLoop --> Interrupt{Interrupted?}
+    Interrupt -->|Ctrl+C| SaveState[Save Current State]
+    Interrupt -->|Error| SaveError[Save Error State]
+    Interrupt -->|No| MoreChunks
+    
+    SaveState --> ShowResume[Show Resume Command]
+    SaveError --> LogError[Log Error Continue Next Table]
+    LogError --> ProcessLoop
+    
+    ShowResume --> End[Exit for Resume]
+    FinalReport --> Success[Success Exit]

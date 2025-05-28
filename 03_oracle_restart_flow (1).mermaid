@@ -1,0 +1,85 @@
+flowchart TD
+    A[Start Oracle Comparator] --> B{Resume Session?}
+    
+    B -->|No| C[Create New Session]
+    B -->|Yes| D[Load Session State]
+    
+    C --> E[Generate Session ID]
+    E --> F[Initialize Table Progress]
+    F --> G[Save Initial State]
+    
+    D --> H{Session Valid?}
+    H -->|No| I[Error: Session Not Found]
+    H -->|Yes| J[Display Session Summary]
+    
+    G --> K[Get Table List from Config]
+    J --> L[Get Pending Tables]
+    
+    K --> M[Start Table Processing Loop]
+    L --> M
+    
+    M --> N{More Tables?}
+    N -->|No| O[Mark Session Complete]
+    N -->|Yes| P[Get Next Table: SCHEMA.TABLE]
+    
+    P --> Q{Table Status?}
+    Q -->|Completed| R[Skip Table]
+    Q -->|Failed and Retry Mode| S[Reset to Pending]
+    Q -->|Pending or In Progress| T[Start Resume Table Comparison]
+    
+    R --> N
+    S --> T
+    
+    T --> U[Mark Table as In Progress]
+    U --> V[Load Existing Checkpoints]
+    V --> W[Get Source Table Metadata]
+    W --> X[Get Target Table Metadata]
+    
+    X --> Y[Calculate Total Chunks]
+    Y --> Z[Update Progress Total Chunks]
+    Z --> AA[Start Chunk Processing Loop]
+    
+    AA --> BB{More Chunks?}
+    BB -->|No| CC[Aggregate All Results]
+    BB -->|Yes| DD[Get Next Chunk]
+    
+    DD --> EE{Checkpoint Exists?}
+    EE -->|Yes| FF[Load Checkpoint Result]
+    EE -->|No| GG[Extract Source Chunk]
+    
+    FF --> HH[Log Skipped Chunk]
+    GG --> II[Extract Target Chunk]
+    II --> JJ[Generate Row Hashes]
+    JJ --> KK[Compare Chunk Hashes]
+    KK --> LL[Save Chunk Checkpoint]
+    LL --> MM[Log Processed Chunk]
+    
+    HH --> NN[Update Chunk Progress]
+    MM --> NN
+    NN --> OO[Aggregate Chunk Results]
+    OO --> PP{Interrupted?}
+    
+    PP -->|Yes Ctrl+C| QQ[Save Current State]
+    PP -->|Yes Error| RR[Mark Table Failed]
+    PP -->|No| BB
+    
+    QQ --> SS[Display Resume Instructions]
+    RR --> TT[Log Error Details]
+    TT --> N
+    
+    CC --> UU{Differences Found?}
+    UU -->|Yes| VV[Generate SQL Sync Files]
+    UU -->|No| WW[Tables in Sync]
+    
+    VV --> XX[Generate Summary Report]
+    WW --> XX
+    XX --> YY[Mark Table Completed]
+    YY --> ZZ[Cleanup Table Checkpoints]
+    ZZ --> N
+    
+    O --> AAA[Generate Final Report]
+    AAA --> BBB[Cleanup Session]
+    BBB --> CCC[End Successfully]
+    
+    SS --> DDD[End Resume Available]
+    I --> EEE[End Error]

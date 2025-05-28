@@ -1,0 +1,74 @@
+flowchart TD
+    A[Application Start] --> B{Command Line Args}
+    
+    B -->|resume SESSION_ID| C[Resume Mode]
+    B -->|list-sessions| D[List All Sessions]
+    B -->|status SESSION_ID| E[Show Session Status]
+    B -->|cleanup DAYS| F[Cleanup Old Sessions]
+    B -->|New Comparison| G[New Session Mode]
+    
+    C --> H[Load Session State File]
+    H --> I{State File Exists?}
+    I -->|No| J[Error Session Not Found]
+    I -->|Yes| K[Parse JSON State]
+    K --> L[Reconstruct Progress Objects]
+    L --> M[Display Session Summary]
+    M --> N[Continue Processing]
+    
+    G --> O[Generate UUID Session ID]
+    O --> P[Create State Directory]
+    P --> Q[Initialize Table Progress]
+    Q --> R[Save Initial State]
+    R --> S[Start Fresh Processing]
+    
+    S --> T[Process Each Table]
+    N --> T
+    T --> U[Update Table Status in_progress]
+    U --> V[Save State After Each Update]
+    
+    V --> W[Process Chunks with Checkpoints]
+    W --> X{Chunk Processing}
+    
+    X -->|Success| Y[Save Chunk Checkpoint]
+    X -->|Error| Z[Save Error State]
+    X -->|Interrupt| AA[Save Current State]
+    
+    Y --> BB[Update Chunk Progress]
+    BB --> CC[Save Updated State]
+    CC --> DD{More Chunks?}
+    
+    DD -->|Yes| W
+    DD -->|No| EE[Mark Table Complete]
+    
+    EE --> FF[Update Completed Tables Count]
+    FF --> GG[Save Final Table State]
+    GG --> HH{More Tables?}
+    
+    HH -->|Yes| T
+    HH -->|No| II[Mark Session Complete]
+    
+    Z --> JJ[Log Error Details]
+    JJ --> KK[Mark Table Failed]
+    KK --> LL[Save Error State]
+    LL --> HH
+    
+    AA --> MM[Save Interruption Point]
+    MM --> NN[Display Resume Instructions]
+    NN --> OO[Exit with Resume Info]
+    
+    II --> PP[Generate Final Reports]
+    PP --> QQ[Cleanup Completed Session]
+    QQ --> RR[Success Exit]
+    
+    D --> SS[Scan State Directory]
+    SS --> TT[Parse Each Session File]
+    TT --> UU[Display Session List]
+    
+    E --> VV[Load Specific Session]
+    VV --> WW[Format Status Output]
+    WW --> XX[Display Status JSON]
+    
+    F --> YY[Calculate Cutoff Date]
+    YY --> ZZ[Find Old Session Files]
+    ZZ --> AAA[Delete Old Files]
+    AAA --> BBB[Delete Old Checkpoints]
