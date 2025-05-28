@@ -1,0 +1,612 @@
+# Oracle Table Comparator - Generated SQL Files
+
+## 📋 **SQL File Generation Overview**
+
+When the Oracle table comparator finds differences between source and target databases, it automatically generates **TWO SQL files** for each table with mismatches:
+
+1. **Target Sync SQL** - Updates target database to match source
+2. **Source Sync SQL** - Updates source database to match target
+
+## 🎯 **Types of Mismatches Handled**
+
+### **1. Missing Records (INSERT Statements)**
+### **2. Different Records (UPDATE Statements)** 
+### **3. Extra Records (Documented but no DELETE - safety measure)**
+
+---
+
+## 📄 **Example SQL Files**
+
+Let's say we're comparing `HR.EMPLOYEES` table and find these differences:
+- **5 employees missing in target database**
+- **3 employees with different data** 
+- **2 employees only exist in target database**
+
+### **Target Sync SQL File**
+**Filename:** `sync_target_HR_EMPLOYEES_20240115_143022_abc12345.sql`
+
+```sql
+-- SQL to sync TARGET Oracle database for table HR.EMPLOYEES
+-- Generated on 2024-01-15 14:30:22.123456
+-- Run ID: abc12345-6789-1011-1213-141516171819
+-- 
+-- IMPORTANT: Review this SQL before execution!
+-- This script will modify the TARGET database to match SOURCE
+--
+-- Statistics:
+-- - Records to INSERT: 5
+-- - Records to UPDATE: 3
+-- - Records in target only: 2 (see comments below)
+--
+-- Execution Instructions:
+-- 1. Review all statements carefully
+-- 2. Test in non-production environment first
+-- 3. Take backup before applying changes
+-- 4. Execute during maintenance window
+
+-- =============================================================================
+-- INSERT STATEMENTS - Records missing in TARGET database
+-- =============================================================================
+
+-- Insert Employee ID 1001 (missing in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    1001, 
+    'John', 
+    'Smith', 
+    'john.smith@company.com', 
+    '+1-555-0101', 
+    TO_DATE('2023-03-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'IT_PROG', 
+    75000, 
+    60, 
+    103, 
+    'ACTIVE'
+);
+
+-- Insert Employee ID 1002 (missing in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    1002, 
+    'Sarah', 
+    'Johnson', 
+    'sarah.johnson@company.com', 
+    '+1-555-0102', 
+    TO_DATE('2023-04-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'HR_REP', 
+    65000, 
+    40, 
+    201, 
+    'ACTIVE'
+);
+
+-- Insert Employee ID 1003 (missing in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    1003, 
+    'Michael', 
+    'Brown', 
+    'michael.brown@company.com', 
+    '+1-555-0103', 
+    TO_DATE('2023-05-12 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'FI_ACCOUNT', 
+    70000, 
+    100, 
+    108, 
+    'ACTIVE'
+);
+
+-- Insert Employee ID 1004 (missing in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    1004, 
+    'Lisa', 
+    'Davis', 
+    'lisa.davis@company.com', 
+    '+1-555-0104', 
+    TO_DATE('2023-06-20 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'SA_REP', 
+    68000, 
+    80, 
+    145, 
+    'ACTIVE'
+);
+
+-- Insert Employee ID 1005 (missing in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    1005, 
+    'Robert', 
+    'Wilson', 
+    'robert.wilson@company.com', 
+    '+1-555-0105', 
+    TO_DATE('2023-07-10 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'IT_PROG', 
+    72000, 
+    60, 
+    103, 
+    'ACTIVE'
+);
+
+-- =============================================================================
+-- UPDATE STATEMENTS - Records with different data
+-- =============================================================================
+
+-- Update Employee ID 2001 (data differs between source and target)
+UPDATE HR.EMPLOYEES SET 
+    FIRST_NAME = 'Jennifer', 
+    LAST_NAME = 'Martinez', 
+    EMAIL = 'jennifer.martinez@company.com', 
+    PHONE = '+1-555-2001', 
+    SALARY = 78000, 
+    DEPARTMENT_ID = 90, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2001;
+
+-- Update Employee ID 2002 (data differs between source and target)
+UPDATE HR.EMPLOYEES SET 
+    FIRST_NAME = 'David', 
+    LAST_NAME = 'Garcia', 
+    EMAIL = 'david.garcia@company.com', 
+    PHONE = '+1-555-2002', 
+    SALARY = 82000, 
+    JOB_ID = 'IT_PROG', 
+    MANAGER_ID = 103, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2002;
+
+-- Update Employee ID 2003 (data differs between source and target)  
+UPDATE HR.EMPLOYEES SET 
+    LAST_NAME = 'Rodriguez', 
+    EMAIL = 'maria.rodriguez@company.com', 
+    SALARY = 76000, 
+    DEPARTMENT_ID = 50, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2003;
+
+-- =============================================================================
+-- RECORDS ONLY IN TARGET (Information Only - No Action Taken)
+-- =============================================================================
+
+-- The following records exist ONLY in the TARGET database:
+-- Employee ID 3001: 'Tom Anderson' - tom.anderson@company.com
+-- Employee ID 3002: 'Amy Taylor' - amy.taylor@company.com
+--
+-- These records are NOT deleted by this script for safety reasons.
+-- If these records should be removed, create separate DELETE statements:
+--
+-- DELETE FROM HR.EMPLOYEES WHERE EMPLOYEE_ID = 3001;
+-- DELETE FROM HR.EMPLOYEES WHERE EMPLOYEE_ID = 3002;
+
+-- =============================================================================
+-- COMMIT TRANSACTION
+-- =============================================================================
+
+COMMIT;
+
+-- =============================================================================
+-- VERIFICATION QUERIES (Run after applying changes)
+-- =============================================================================
+
+-- Verify record counts match
+SELECT 'SOURCE_COUNT' as DB, COUNT(*) as RECORD_COUNT 
+FROM HR.EMPLOYEES@SOURCE_DB_LINK 
+WHERE STATUS = 'ACTIVE'
+UNION ALL
+SELECT 'TARGET_COUNT' as DB, COUNT(*) as RECORD_COUNT 
+FROM HR.EMPLOYEES 
+WHERE STATUS = 'ACTIVE';
+
+-- Verify specific records were inserted
+SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL 
+FROM HR.EMPLOYEES 
+WHERE EMPLOYEE_ID IN (1001, 1002, 1003, 1004, 1005)
+ORDER BY EMPLOYEE_ID;
+
+-- Verify specific records were updated
+SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, SALARY 
+FROM HR.EMPLOYEES 
+WHERE EMPLOYEE_ID IN (2001, 2002, 2003)
+ORDER BY EMPLOYEE_ID;
+```
+
+---
+
+### **Source Sync SQL File**
+**Filename:** `sync_source_HR_EMPLOYEES_20240115_143022_abc12345.sql`
+
+```sql
+-- SQL to sync SOURCE Oracle database for table HR.EMPLOYEES
+-- Generated on 2024-01-15 14:30:22.123456
+-- Run ID: abc12345-6789-1011-1213-141516171819
+--
+-- IMPORTANT: Review this SQL before execution!
+-- This script will modify the SOURCE database to match TARGET
+--
+-- Statistics:
+-- - Records to INSERT: 2 (records only in target)
+-- - Records to UPDATE: 3 (using target values)
+-- - Records in source only: 5 (see comments below)
+
+-- =============================================================================
+-- INSERT STATEMENTS - Records missing in SOURCE database
+-- =============================================================================
+
+-- Insert Employee ID 3001 (exists only in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    3001, 
+    'Tom', 
+    'Anderson', 
+    'tom.anderson@company.com', 
+    '+1-555-3001', 
+    TO_DATE('2023-08-15 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'MK_REP', 
+    69000, 
+    20, 
+    201, 
+    'ACTIVE'
+);
+
+-- Insert Employee ID 3002 (exists only in target)
+INSERT INTO HR.EMPLOYEES (
+    EMPLOYEE_ID, 
+    FIRST_NAME, 
+    LAST_NAME, 
+    EMAIL, 
+    PHONE, 
+    HIRE_DATE, 
+    JOB_ID, 
+    SALARY, 
+    DEPARTMENT_ID, 
+    MANAGER_ID, 
+    STATUS
+) VALUES (
+    3002, 
+    'Amy', 
+    'Taylor', 
+    'amy.taylor@company.com', 
+    '+1-555-3002', 
+    TO_DATE('2023-09-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS'), 
+    'PU_CLERK', 
+    45000, 
+    30, 
+    114, 
+    'ACTIVE'
+);
+
+-- =============================================================================
+-- UPDATE STATEMENTS - Using TARGET values as master
+-- =============================================================================
+
+-- Update Employee ID 2001 (using target data as master)
+UPDATE HR.EMPLOYEES SET 
+    FIRST_NAME = 'Jennifer', 
+    LAST_NAME = 'Martinez', 
+    EMAIL = 'jennifer.martinez@company.com', 
+    PHONE = '+1-555-2001', 
+    SALARY = 78000, 
+    DEPARTMENT_ID = 90, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2001;
+
+-- Update Employee ID 2002 (using target data as master)
+UPDATE HR.EMPLOYEES SET 
+    FIRST_NAME = 'David', 
+    LAST_NAME = 'Garcia', 
+    EMAIL = 'david.garcia@company.com', 
+    PHONE = '+1-555-2002', 
+    SALARY = 82000, 
+    JOB_ID = 'IT_PROG', 
+    MANAGER_ID = 103, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2002;
+
+-- Update Employee ID 2003 (using target data as master)
+UPDATE HR.EMPLOYEES SET 
+    LAST_NAME = 'Rodriguez', 
+    EMAIL = 'maria.rodriguez@company.com', 
+    SALARY = 76000, 
+    DEPARTMENT_ID = 50, 
+    STATUS = 'ACTIVE'
+WHERE EMPLOYEE_ID = 2003;
+
+-- =============================================================================
+-- RECORDS ONLY IN SOURCE (Information Only - No Action Taken)
+-- =============================================================================
+
+-- The following records exist ONLY in the SOURCE database:
+-- Employee ID 1001: 'John Smith' - john.smith@company.com
+-- Employee ID 1002: 'Sarah Johnson' - sarah.johnson@company.com  
+-- Employee ID 1003: 'Michael Brown' - michael.brown@company.com
+-- Employee ID 1004: 'Lisa Davis' - lisa.davis@company.com
+-- Employee ID 1005: 'Robert Wilson' - robert.wilson@company.com
+--
+-- These records are NOT deleted by this script for safety reasons.
+
+COMMIT;
+```
+
+---
+
+## 🎯 **Complex Table Examples**
+
+### **Financial Transactions Table**
+**Filename:** `sync_target_FINANCE_TRANSACTIONS_20240115_143530_def67890.sql`
+
+```sql
+-- SQL to sync TARGET Oracle database for table FINANCE.TRANSACTIONS
+-- Generated on 2024-01-15 14:35:30.987654
+-- Run ID: def67890-1234-5678-9012-345678901234
+
+-- =============================================================================
+-- INSERT STATEMENTS - Missing transactions in target
+-- =============================================================================
+
+INSERT INTO FINANCE.TRANSACTIONS (
+    TRANSACTION_ID, 
+    ACCOUNT_ID, 
+    TRANSACTION_TYPE, 
+    AMOUNT, 
+    CURRENCY, 
+    TRANSACTION_DATE, 
+    DESCRIPTION, 
+    STATUS, 
+    REFERENCE_ID
+) VALUES (
+    'TXN-2024-001234', 
+    'ACC-789012', 
+    'CREDIT', 
+    2500.50, 
+    'USD', 
+    TO_DATE('2024-01-14 15:30:45', 'YYYY-MM-DD HH24:MI:SS'), 
+    'Salary payment - January 2024', 
+    'POSTED', 
+    'PAY-20240114-001'
+);
+
+INSERT INTO FINANCE.TRANSACTIONS (
+    TRANSACTION_ID, 
+    ACCOUNT_ID, 
+    TRANSACTION_TYPE, 
+    AMOUNT, 
+    CURRENCY, 
+    TRANSACTION_DATE, 
+    DESCRIPTION, 
+    STATUS, 
+    REFERENCE_ID
+) VALUES (
+    'TXN-2024-001235', 
+    'ACC-789013', 
+    'DEBIT', 
+    150.75, 
+    'USD', 
+    TO_DATE('2024-01-14 16:45:12', 'YYYY-MM-DD HH24:MI:SS'), 
+    'Office supplies purchase', 
+    'CLEARED', 
+    'PUR-20240114-087'
+);
+
+-- =============================================================================
+-- UPDATE STATEMENTS - Transactions with different status/amounts
+-- =============================================================================
+
+-- Update transaction status from PENDING to POSTED
+UPDATE FINANCE.TRANSACTIONS SET 
+    STATUS = 'POSTED', 
+    AMOUNT = 1250.00,
+    DESCRIPTION = 'Insurance payment - corrected amount'
+WHERE TRANSACTION_ID = 'TXN-2024-001200';
+
+-- Update transaction with corrected reference
+UPDATE FINANCE.TRANSACTIONS SET 
+    REFERENCE_ID = 'REF-20240113-CORRECTED', 
+    STATUS = 'CLEARED'
+WHERE TRANSACTION_ID = 'TXN-2024-001201';
+
+COMMIT;
+```
+
+### **Order Items with Composite Keys**
+**Filename:** `sync_target_SALES_ORDER_ITEMS_20240115_144015_ghi34567.sql`
+
+```sql
+-- SQL to sync TARGET Oracle database for table SALES.ORDER_ITEMS
+-- Generated on 2024-01-15 14:40:15.456789
+-- Run ID: ghi34567-8901-2345-6789-012345678901
+
+-- =============================================================================
+-- INSERT STATEMENTS - Missing order items
+-- =============================================================================
+
+INSERT INTO SALES.ORDER_ITEMS (
+    ORDER_ID, 
+    LINE_ITEM_ID, 
+    PRODUCT_ID, 
+    QUANTITY, 
+    UNIT_PRICE, 
+    TOTAL_PRICE, 
+    DISCOUNT, 
+    STATUS
+) VALUES (
+    'ORD-2024-5001', 
+    1, 
+    'PROD-ABC123', 
+    5, 
+    29.99, 
+    149.95, 
+    0.00, 
+    'ACTIVE'
+);
+
+INSERT INTO SALES.ORDER_ITEMS (
+    ORDER_ID, 
+    LINE_ITEM_ID, 
+    PRODUCT_ID, 
+    QUANTITY, 
+    UNIT_PRICE, 
+    TOTAL_PRICE, 
+    DISCOUNT, 
+    STATUS
+) VALUES (
+    'ORD-2024-5001', 
+    2, 
+    'PROD-XYZ789', 
+    2, 
+    45.50, 
+    91.00, 
+    5.00, 
+    'ACTIVE'
+);
+
+-- =============================================================================
+-- UPDATE STATEMENTS - Items with quantity/price differences
+-- =============================================================================
+
+-- Update quantity and recalculate total
+UPDATE SALES.ORDER_ITEMS SET 
+    QUANTITY = 3, 
+    TOTAL_PRICE = 89.97, 
+    DISCOUNT = 2.50
+WHERE ORDER_ID = 'ORD-2024-4995' AND LINE_ITEM_ID = 1;
+
+-- Update product substitution
+UPDATE SALES.ORDER_ITEMS SET 
+    PRODUCT_ID = 'PROD-NEW456', 
+    UNIT_PRICE = 32.99, 
+    TOTAL_PRICE = 65.98
+WHERE ORDER_ID = 'ORD-2024-4998' AND LINE_ITEM_ID = 3;
+
+COMMIT;
+```
+
+---
+
+## 🛡️ **Safety Features in Generated SQL**
+
+### **1. No DELETE Statements**
+- **Records only in target are documented but NOT deleted**
+- **Safety measure to prevent accidental data loss**
+- **DBAs can manually add DELETE statements if needed**
+
+### **2. Comprehensive Comments**
+- **Header with generation timestamp and run ID**
+- **Statistics showing what will be changed**
+- **Safety instructions and recommendations**
+- **Verification queries to run after execution**
+
+### **3. Oracle-Specific Features**
+- **Proper DATE handling with TO_DATE()**
+- **Correct string escaping (single quotes doubled)**
+- **NULL value handling**
+- **Transaction control with COMMIT**
+
+### **4. Review Guidelines**
+- **Clear instructions to review before execution**
+- **Recommendations for testing in non-production**
+- **Backup instructions**
+- **Maintenance window recommendations**
+
+## 🚀 **Usage Workflow**
+
+### **1. Review Generated SQL**
+```bash
+# Check what files were generated
+ls -la sync_*.sql
+
+# Review target sync file
+vim sync_target_HR_EMPLOYEES_20240115_143022_abc12345.sql
+```
+
+### **2. Test in Non-Production**
+```sql
+-- Connect to test environment
+sqlplus test_user/password@test_db
+
+-- Execute the SQL
+@sync_target_HR_EMPLOYEES_20240115_143022_abc12345.sql
+```
+
+### **3. Production Execution**
+```sql
+-- Connect to production
+sqlplus prod_user/password@prod_db
+
+-- Take backup first
+CREATE TABLE HR.EMPLOYEES_BACKUP_20240115 AS 
+SELECT * FROM HR.EMPLOYEES;
+
+-- Execute sync SQL
+@sync_target_HR_EMPLOYEES_20240115_143022_abc12345.sql
+
+-- Run verification queries
+-- (included at end of generated SQL file)
+```
+
+This comprehensive SQL generation ensures that DBAs have complete control over synchronization while maintaining data safety and audit trails.
