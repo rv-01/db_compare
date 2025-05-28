@@ -1,0 +1,331 @@
+# Oracle Table Comparison Configuration File
+# Production-ready configuration with secure credential management
+
+# =============================================================================
+# DATABASE CONNECTIONS - SECURE CREDENTIAL OPTIONS
+# =============================================================================
+
+# OPTION 1: Environment Variables (Recommended)
+source_database:
+  host: "source-oracle-db.company.com"
+  port: 1521
+  service_name: "PRODDB"
+  username: "${ORACLE_SOURCE_USER}"
+  password: "${ORACLE_SOURCE_PASSWORD}"
+
+target_database:
+  host: "target-oracle-db.company.com"
+  port: 1521
+  service_name: "DRDB"
+  username: "${ORACLE_TARGET_USER}"
+  password: "${ORACLE_TARGET_PASSWORD}"
+
+# OPTION 2: External Credential File (Alternative)
+# source_database:
+#   host: "source-oracle-db.company.com"
+#   port: 1521
+#   service_name: "PRODDB"
+#   credential_file: "/secure/path/source_db_credentials.json"
+
+# target_database:
+#   host: "target-oracle-db.company.com"
+#   port: 1521
+#   service_name: "DRDB"
+#   credential_file: "/secure/path/target_db_credentials.json"
+
+# OPTION 3: Oracle Wallet (Most Secure)
+# source_database:
+#   host: "source-oracle-db.company.com"
+#   port: 1521
+#   service_name: "PRODDB"
+#   wallet_location: "/opt/oracle/wallet"
+#   wallet_password: "${WALLET_PASSWORD}"
+
+# target_database:
+#   host: "target-oracle-db.company.com"
+#   port: 1521
+#   service_name: "DRDB"
+#   wallet_location: "/opt/oracle/wallet"
+#   wallet_password: "${WALLET_PASSWORD}"
+
+# OPTION 4: Prompt for Credentials (Interactive)
+# source_database:
+#   host: "source-oracle-db.company.com"
+#   port: 1521
+#   service_name: "PRODDB"
+#   prompt_credentials: true
+
+# target_database:
+#   host: "target-oracle-db.company.com"
+#   port: 1521
+#   service_name: "DRDB"
+#   prompt_credentials: true
+
+# =============================================================================
+# AUDIT AND LOGGING CONFIGURATION
+# =============================================================================
+
+audit:
+  # Main audit log file
+  audit_file: "oracle_table_comparison_audit.log"
+  
+  # Optional: Database audit table for centralized logging
+  # Uncomment and configure if you want to store audit logs in a database
+  # audit_database:
+  #   host: "audit-db.company.com"
+  #   port: 1521
+  #   service_name: "AUDITDB"
+  #   username: "audit_user"
+  #   password: "audit_password"
+
+# =============================================================================
+# PROCESSING CONFIGURATION
+# =============================================================================
+
+# Number of parallel processes (adjust based on your system)
+# Recommendation: Start with CPU count, adjust based on database capacity
+max_workers: 4
+
+# =============================================================================
+# TABLES TO COMPARE
+# =============================================================================
+
+tables:
+  # HR Schema Tables
+  # ----------------
+  
+  # Employee master table
+  - schema_name: "HR"
+    table_name: "EMPLOYEES"
+    primary_key: ["EMPLOYEE_ID"]
+    chunk_size: 10000
+    # Compare all columns (columns: null means include all)
+    columns: null
+    # Only active employees
+    where_clause: "STATUS = 'ACTIVE'"
+  
+  # Department reference table
+  - schema_name: "HR"
+    table_name: "DEPARTMENTS"
+    primary_key: ["DEPARTMENT_ID"]
+    chunk_size: 5000
+    columns: ["DEPARTMENT_ID", "DEPARTMENT_NAME", "MANAGER_ID", "LOCATION_ID", "BUDGET"]
+    where_clause: "ACTIVE_FLAG = 'Y'"
+  
+  # Employee job history
+  - schema_name: "HR"
+    table_name: "JOB_HISTORY"
+    primary_key: ["EMPLOYEE_ID", "START_DATE"]
+    chunk_size: 8000
+    columns: ["EMPLOYEE_ID", "START_DATE", "END_DATE", "JOB_ID", "DEPARTMENT_ID"]
+    # Only records from last 5 years
+    where_clause: "START_DATE >= ADD_MONTHS(SYSDATE, -60)"
+  
+  # SALES Schema Tables
+  # -------------------
+  
+  # Customer master
+  - schema_name: "SALES"
+    table_name: "CUSTOMERS"
+    primary_key: ["CUSTOMER_ID"]
+    chunk_size: 12000
+    columns: ["CUSTOMER_ID", "CUSTOMER_NAME", "EMAIL", "PHONE", "ADDRESS", "CITY", "COUNTRY", "REGISTRATION_DATE", "STATUS"]
+    where_clause: "STATUS IN ('ACTIVE', 'PREMIUM')"
+  
+  # Order header
+  - schema_name: "SALES"
+    table_name: "ORDERS"
+    primary_key: ["ORDER_ID"]
+    chunk_size: 15000
+    columns: ["ORDER_ID", "CUSTOMER_ID", "ORDER_DATE", "TOTAL_AMOUNT", "CURRENCY", "STATUS", "SALES_REP_ID"]
+    # Orders from current year
+    where_clause: "ORDER_DATE >= TRUNC(SYSDATE, 'YEAR')"
+  
+  # Order line items
+  - schema_name: "SALES"
+    table_name: "ORDER_ITEMS"
+    primary_key: ["ORDER_ID", "LINE_ITEM_ID"]
+    chunk_size: 8000
+    columns: ["ORDER_ID", "LINE_ITEM_ID", "PRODUCT_ID", "QUANTITY", "UNIT_PRICE", "TOTAL_PRICE", "DISCOUNT"]
+    # Items for current year orders
+    where_clause: "ORDER_ID IN (SELECT ORDER_ID FROM SALES.ORDERS WHERE ORDER_DATE >= TRUNC(SYSDATE, 'YEAR'))"
+  
+  # FINANCE Schema Tables
+  # ---------------------
+  
+  # Transaction records
+  - schema_name: "FINANCE"
+    table_name: "TRANSACTIONS"
+    primary_key: ["TRANSACTION_ID"]
+    chunk_size: 5000  # Smaller chunks for large financial data
+    columns: ["TRANSACTION_ID", "ACCOUNT_ID", "TRANSACTION_TYPE", "AMOUNT", "CURRENCY", "TRANSACTION_DATE", "DESCRIPTION", "STATUS"]
+    # Last 30 days of transactions
+    where_clause: "TRANSACTION_DATE >= SYSDATE - 30 AND STATUS IN ('POSTED', 'CLEARED')"
+  
+  # Account balances
+  - schema_name: "FINANCE"
+    table_name: "ACCOUNT_BALANCES"
+    primary_key: ["ACCOUNT_ID", "BALANCE_DATE"]
+    chunk_size: 10000
+    columns: ["ACCOUNT_ID", "BALANCE_DATE", "OPENING_BALANCE", "CLOSING_BALANCE", "CURRENCY"]
+    # Current month balances
+    where_clause: "BALANCE_DATE >= TRUNC(SYSDATE, 'MONTH')"
+  
+  # INVENTORY Schema Tables
+  # -----------------------
+  
+  # Product catalog
+  - schema_name: "INVENTORY"
+    table_name: "PRODUCTS"
+    primary_key: ["PRODUCT_ID"]
+    chunk_size: 15000
+    columns: ["PRODUCT_ID", "PRODUCT_NAME", "CATEGORY_ID", "SUPPLIER_ID", "UNIT_PRICE", "COST_PRICE", "UNITS_IN_STOCK", "REORDER_LEVEL", "DISCONTINUED"]
+    # Only active products
+    where_clause: "DISCONTINUED = 'N'"
+  
+  # Stock movements
+  - schema_name: "INVENTORY"
+    table_name: "STOCK_MOVEMENTS"
+    primary_key: ["MOVEMENT_ID"]
+    chunk_size: 6000
+    columns: ["MOVEMENT_ID", "PRODUCT_ID", "MOVEMENT_TYPE", "QUANTITY", "MOVEMENT_DATE", "REFERENCE_ID", "NOTES"]
+    # Last 90 days of movements
+    where_clause: "MOVEMENT_DATE >= SYSDATE - 90"
+  
+  # AUDIT Schema Tables
+  # -------------------
+  
+  # User activity audit
+  - schema_name: "AUDIT"
+    table_name: "USER_ACTIONS"
+    primary_key: ["AUDIT_ID"]
+    chunk_size: 2000  # Small chunks for large audit tables
+    columns: ["AUDIT_ID", "USER_ID", "ACTION_TYPE", "TABLE_NAME", "RECORD_ID", "OLD_VALUES", "NEW_VALUES", "ACTION_TIMESTAMP", "IP_ADDRESS"]
+    # Last 7 days of audit records
+    where_clause: "ACTION_TIMESTAMP >= SYSDATE - 7"
+  
+  # Login audit
+  - schema_name: "AUDIT"
+    table_name: "LOGIN_ATTEMPTS"
+    primary_key: ["LOGIN_ID"]
+    chunk_size: 8000
+    columns: ["LOGIN_ID", "USERNAME", "LOGIN_TIME", "IP_ADDRESS", "SUCCESS_FLAG", "FAILURE_REASON"]
+    # Last 30 days of login attempts
+    where_clause: "LOGIN_TIME >= SYSDATE - 30"
+  
+  # REFERENCE Schema Tables
+  # -----------------------
+  
+  # Country codes lookup
+  - schema_name: "REFERENCE"
+    table_name: "COUNTRY_CODES"
+    primary_key: ["COUNTRY_CODE"]
+    chunk_size: 20000  # Large chunks for small reference tables
+    columns: ["COUNTRY_CODE", "COUNTRY_NAME", "CONTINENT", "CURRENCY_CODE", "PHONE_CODE", "ACTIVE_FLAG"]
+    where_clause: "ACTIVE_FLAG = 'Y'"
+  
+  # Currency rates
+  - schema_name: "REFERENCE"
+    table_name: "CURRENCY_RATES"
+    primary_key: ["CURRENCY_CODE", "RATE_DATE"]
+    chunk_size: 10000
+    columns: ["CURRENCY_CODE", "RATE_DATE", "EXCHANGE_RATE", "BASE_CURRENCY"]
+    # Last 90 days of rates
+    where_clause: "RATE_DATE >= SYSDATE - 90"
+  
+  # Product categories
+  - schema_name: "REFERENCE"
+    table_name: "PRODUCT_CATEGORIES"
+    primary_key: ["CATEGORY_ID"]
+    chunk_size: 15000
+    columns: ["CATEGORY_ID", "CATEGORY_NAME", "PARENT_CATEGORY_ID", "DESCRIPTION", "ACTIVE_FLAG"]
+    where_clause: "ACTIVE_FLAG = 'Y'"
+
+# =============================================================================
+# ADVANCED CONFIGURATION EXAMPLES
+# =============================================================================
+
+# Example configurations for different scenarios:
+
+# Large Table Configuration:
+# - schema_name: "DATA_WAREHOUSE"
+#   table_name: "FACT_SALES_HISTORY"
+#   primary_key: ["SALE_ID"]
+#   chunk_size: 1000  # Very small chunks for huge tables
+#   columns: ["SALE_ID", "PRODUCT_ID", "CUSTOMER_ID", "SALE_DATE", "AMOUNT"]
+#   where_clause: "SALE_DATE >= DATE '2024-01-01'"
+
+# Composite Primary Key Example:
+# - schema_name: "ANALYTICS"
+#   table_name: "DAILY_METRICS"
+#   primary_key: ["METRIC_DATE", "METRIC_TYPE", "ENTITY_ID"]
+#   chunk_size: 5000
+#   columns: ["METRIC_DATE", "METRIC_TYPE", "ENTITY_ID", "METRIC_VALUE"]
+#   where_clause: "METRIC_DATE >= TRUNC(SYSDATE) - 30"
+
+# No WHERE Clause Example (compare entire table):
+# - schema_name: "MASTER_DATA"
+#   table_name: "STATIC_LOOKUP"
+#   primary_key: ["LOOKUP_ID"]
+#   chunk_size: 25000
+#   columns: null  # All columns
+#   where_clause: null  # No filtering
+
+# =============================================================================
+# PERFORMANCE TUNING GUIDELINES
+# =============================================================================
+
+# Chunk Size Recommendations:
+# - Reference tables (< 10K rows): 15,000 - 25,000
+# - Small tables (10K - 100K rows): 10,000 - 15,000
+# - Medium tables (100K - 1M rows): 5,000 - 10,000
+# - Large tables (1M - 10M rows): 2,000 - 5,000
+# - Very large tables (> 10M rows): 1,000 - 3,000
+# - Audit/Log tables (wide rows): 1,000 - 2,000
+
+# WHERE Clause Best Practices:
+# - Use indexed columns for better performance
+# - Consider date-based filtering for large historical tables
+# - Use IN clauses sparingly (prefer EXISTS if needed)
+# - Test WHERE clauses separately for performance
+# - Use UPPER() for case-insensitive string comparisons
+
+# Column Selection Tips:
+# - Exclude LOB columns (CLOB, BLOB) if not needed
+# - Exclude calculated/computed columns that may differ due to timing
+# - Include all business-critical columns for data integrity
+# - Consider excluding audit columns (CREATED_BY, MODIFIED_DATE) if they're expected to differ
+
+# Database Connection Tips:
+# - Ensure both databases have adequate connection pools
+# - Use read-only accounts with minimal necessary privileges
+# - Test connections before starting large comparisons
+# - Consider network bandwidth between databases and comparison server
+
+# =============================================================================
+# EXAMPLE USAGE COMMANDS
+# =============================================================================
+
+# Start new comparison:
+# python oracle_comparator_restart.py config.yaml
+
+# Resume interrupted comparison:
+# python oracle_comparator_restart.py config.yaml --resume abc12345-6789-...
+
+# Compare specific table:
+# python oracle_comparator_restart.py config.yaml --table HR.EMPLOYEES
+
+# Retry failed tables:
+# python oracle_comparator_restart.py config.yaml --resume abc12345 --retry-failed
+
+# List all sessions:
+# python oracle_comparator_restart.py config.yaml --list-sessions
+
+# Check session status:
+# python oracle_comparator_restart.py config.yaml --status abc12345
+
+# Clean up old sessions:
+# python oracle_comparator_restart.py config.yaml --cleanup 7
+
+# Run without progress bars (for scripting):
+# python oracle_comparator_restart.py config.yaml --no-progress
