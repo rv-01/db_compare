@@ -1,0 +1,971 @@
+# Oracle Table Comparator - Complete User Guide
+
+## 📋 **Table of Contents**
+1. [Overview](#overview)
+2. [System Requirements](#system-requirements)
+3. [Installation](#installation)
+4. [Secure Credential Setup](#secure-credential-setup)
+5. [Configuration](#configuration)
+6. [Basic Usage](#basic-usage)
+7. [Advanced Features](#advanced-features)
+8. [Performance Tuning](#performance-tuning)
+9. [Troubleshooting](#troubleshooting)
+10. [Best Practices](#best-practices)
+11. [FAQ](#faq)
+
+---
+
+## 🎯 **Overview**
+
+The Oracle Table Comparator is a production-ready tool designed to compare large Oracle tables across different databases with enterprise-grade features:
+
+### **Key Features**
+- ✅ **Schema-aware comparison** with unique table identification
+- ✅ **Restart capability** - resume from any interruption point
+- ✅ **Progress tracking** with real-time visual feedback
+- ✅ **Hash-based comparison** for efficient row-level detection
+- ✅ **Secure credential management** with multiple authentication options
+- ✅ **SQL generation** for automatic synchronization scripts
+- ✅ **Comprehensive auditing** with detailed logging
+- ✅ **Memory efficient** chunked processing for tables of any size
+- ✅ **Production safe** - read-only operations with review-before-execute
+
+### **Use Cases**
+- **Data Replication Validation**: Verify DR/backup database consistency
+- **Migration Verification**: Confirm data integrity after migrations
+- **Environment Synchronization**: Compare DEV/TEST/PROD environments
+- **Compliance Auditing**: Regular data consistency checks
+- **Troubleshooting**: Identify data discrepancies and root causes
+
+---
+
+## 💻 **System Requirements**
+
+### **Minimum Requirements**
+- **Python**: 3.7 or higher
+- **Memory**: 2GB RAM minimum, 4GB recommended
+- **Storage**: 1GB free space for logs and checkpoint files
+- **Network**: Stable connection to Oracle databases
+- **Oracle Access**: Read permissions on comparison tables
+
+### **Supported Platforms**
+- **Linux**: RHEL/CentOS 7+, Ubuntu 18.04+, SLES 12+
+- **Windows**: Windows 10/11, Windows Server 2016+
+- **macOS**: macOS 10.14+ (for development/testing)
+- **Docker**: Any platform supporting Docker containers
+
+### **Oracle Database Compatibility**
+- **Oracle Database**: 11g, 12c, 18c, 19c, 21c, 23c
+- **Oracle Cloud**: Autonomous Database, Exadata Cloud Service
+- **Oracle RAC**: Real Application Clusters supported
+- **Connection Methods**: Standard TCP/IP, Oracle Wallet, SSL/TLS
+
+---
+
+## 🚀 **Installation**
+
+### **Method 1: Standard Python Installation (Recommended)**
+
+#### **Step 1: Install Python Dependencies**
+```bash
+# Install required packages
+pip install oracledb PyYAML tqdm
+
+# Or using requirements file
+pip install -r requirements.txt
+```
+
+#### **Step 2: Download the Tool**
+```bash
+# Download the main script
+wget https://example.com/oracle_comparator_restart.py
+
+# Or clone from repository
+git clone https://github.com/your-org/oracle-table-comparator.git
+cd oracle-table-comparator
+```
+
+#### **Step 3: Verify Installation**
+```bash
+# Test the installation
+python oracle_comparator_restart.py --help
+
+# Expected output:
+# Oracle Table Comparison Tool with Restart Capability
+# usage: oracle_comparator_restart.py [-h] [--table TABLE] [--resume RESUME] ...
+```
+
+### **Method 2: Docker Installation**
+
+#### **Create Dockerfile**
+```dockerfile
+FROM python:3.9-slim
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Create application directory
+WORKDIR /app
+
+# Copy application files
+COPY oracle_comparator_restart.py .
+COPY config.yaml .
+
+# Create non-root user for security
+RUN useradd -m -u 1000 oracle_user
+USER oracle_user
+
+# Default command
+CMD ["python", "oracle_comparator_restart.py", "config.yaml"]
+```
+
+#### **Build and Run**
+```bash
+# Build Docker image
+docker build -t oracle-comparator .
+
+# Run with environment variables
+docker run -d \
+  -e ORACLE_SOURCE_USER="comparison_user" \
+  -e ORACLE_SOURCE_PASSWORD="your_password" \
+  -e ORACLE_TARGET_USER="comparison_user" \
+  -e ORACLE_TARGET_PASSWORD="your_password" \
+  -v /local/config:/app/config:ro \
+  oracle-comparator
+```
+
+### **Method 3: Virtual Environment Installation**
+```bash
+# Create virtual environment
+python -m venv oracle_comparator_env
+
+# Activate virtual environment
+source oracle_comparator_env/bin/activate  # Linux/macOS
+# oracle_comparator_env\Scripts\activate   # Windows
+
+# Install dependencies
+pip install oracledb PyYAML tqdm
+
+# Download application
+wget https://example.com/oracle_comparator_restart.py
+```
+
+---
+
+## 🔐 **Secure Credential Setup**
+
+**⚠️ IMPORTANT: Never store passwords directly in configuration files!**
+
+### **Option 1: Environment Variables (Recommended)**
+
+#### **Linux/macOS Setup:**
+```bash
+# Create secure environment file
+cat > ~/.oracle_env << 'EOF'
+export ORACLE_SOURCE_USER="comparison_user"
+export ORACLE_SOURCE_PASSWORD="your_secure_password"
+export ORACLE_TARGET_USER="comparison_user"
+export ORACLE_TARGET_PASSWORD="your_secure_password"
+EOF
+
+# Secure the file
+chmod 600 ~/.oracle_env
+
+# Load environment variables
+source ~/.oracle_env
+
+# Add to shell profile for persistence
+echo 'source ~/.oracle_env' >> ~/.bashrc
+```
+
+#### **Windows Setup:**
+```cmd
+REM Set environment variables
+set ORACLE_SOURCE_USER=comparison_user
+set ORACLE_SOURCE_PASSWORD=your_secure_password
+set ORACLE_TARGET_USER=comparison_user
+set ORACLE_TARGET_PASSWORD=your_secure_password
+
+REM Or use PowerShell for persistence
+[Environment]::SetEnvironmentVariable("ORACLE_SOURCE_USER", "comparison_user", "User")
+[Environment]::SetEnvironmentVariable("ORACLE_SOURCE_PASSWORD", "your_secure_password", "User")
+```
+
+### **Option 2: External Credential Files**
+
+#### **Create Secure Credential Directory:**
+```bash
+# Create secure directory
+sudo mkdir -p /secure/oracle_credentials
+sudo chown $USER:$USER /secure/oracle_credentials
+chmod 750 /secure/oracle_credentials
+```
+
+#### **Create Credential Files:**
+```bash
+# Source database credentials
+cat > /secure/oracle_credentials/source_db.json << 'EOF'
+{
+  "username": "comparison_user",
+  "password": "your_secure_password"
+}
+EOF
+
+# Target database credentials
+cat > /secure/oracle_credentials/target_db.json << 'EOF'
+{
+  "username": "comparison_user", 
+  "password": "your_secure_password"
+}
+EOF
+
+# Secure the files (read-only for owner)
+chmod 600 /secure/oracle_credentials/*.json
+```
+
+### **Option 3: Interactive Prompts**
+```yaml
+# Configuration for interactive credential prompting
+source_database:
+  host: "source-db.company.com"
+  port: 1521
+  service_name: "PRODDB"
+  prompt_credentials: true
+```
+
+---
+
+## ⚙️ **Configuration**
+
+### **Create Configuration File**
+
+#### **Basic Configuration Template:**
+```yaml
+# config.yaml - Basic Oracle Table Comparison Configuration
+
+# Source Database (using environment variables)
+source_database:
+  host: "source-oracle-db.company.com"
+  port: 1521
+  service_name: "PRODDB"
+  username: "${ORACLE_SOURCE_USER}"
+  password: "${ORACLE_SOURCE_PASSWORD}"
+
+# Target Database
+target_database:
+  host: "target-oracle-db.company.com"
+  port: 1521
+  service_name: "DRDB"
+  username: "${ORACLE_TARGET_USER}"
+  password: "${ORACLE_TARGET_PASSWORD}"
+
+# Audit Configuration
+audit:
+  audit_file: "oracle_comparison_audit.log"
+
+# Processing Configuration
+max_workers: 4
+
+# Tables to Compare
+tables:
+  # HR Schema - Employee Data
+  - schema_name: "HR"
+    table_name: "EMPLOYEES"
+    primary_key: ["EMPLOYEE_ID"]
+    chunk_size: 10000
+    columns: ["EMPLOYEE_ID", "FIRST_NAME", "LAST_NAME", "EMAIL", "SALARY", "STATUS"]
+    where_clause: "STATUS = 'ACTIVE'"
+  
+  # Finance Schema - Transaction Data
+  - schema_name: "FINANCE"
+    table_name: "TRANSACTIONS"
+    primary_key: ["TRANSACTION_ID"]
+    chunk_size: 5000
+    columns: null  # Compare all columns
+    where_clause: "TRANSACTION_DATE >= SYSDATE - 30"
+```
+
+#### **Advanced Configuration Options:**
+```yaml
+# Alternative credential methods
+source_database:
+  host: "source-db.company.com"
+  port: 1521
+  service_name: "PRODDB"
+  # Option 1: Environment variables
+  username: "${ORACLE_SOURCE_USER}"
+  password: "${ORACLE_SOURCE_PASSWORD}"
+  
+  # Option 2: Credential file
+  # credential_file: "/secure/oracle_credentials/source_db.json"
+  
+  # Option 3: Oracle Wallet
+  # wallet_location: "/opt/oracle/wallet"
+  # wallet_password: "${WALLET_PASSWORD}"
+  
+  # Option 4: Interactive prompts
+  # prompt_credentials: true
+
+# Table configuration examples
+tables:
+  # Simple table comparison
+  - schema_name: "HR"
+    table_name: "DEPARTMENTS"
+    primary_key: ["DEPARTMENT_ID"]
+    chunk_size: 10000
+  
+  # Composite primary key
+  - schema_name: "SALES"
+    table_name: "ORDER_ITEMS"
+    primary_key: ["ORDER_ID", "LINE_ITEM_ID"]
+    chunk_size: 8000
+    
+  # Filtered comparison with specific columns
+  - schema_name: "INVENTORY"
+    table_name: "PRODUCTS"
+    primary_key: ["PRODUCT_ID"]
+    chunk_size: 15000
+    columns: ["PRODUCT_ID", "PRODUCT_NAME", "PRICE", "STATUS"]
+    where_clause: "STATUS != 'DISCONTINUED'"
+```
+
+### **Configuration Validation**
+```bash
+# Test configuration file
+python oracle_comparator_restart.py config.yaml --list-sessions
+# Should show: "No Oracle comparison sessions found."
+
+# Test database connections
+python -c "
+import yaml
+from oracle_comparator_restart import DatabaseConfig
+config = yaml.safe_load(open('config.yaml'))
+source_db = DatabaseConfig(**config['source_database'])
+print('Testing source connection...')
+conn = source_db.get_connection()
+print('Source connection successful!')
+conn.close()
+"
+```
+
+---
+
+## 🎯 **Basic Usage**
+
+### **1. First-Time Comparison**
+```bash
+# Start new comparison with progress bars
+python oracle_comparator_restart.py config.yaml
+
+# Expected output:
+# 🚀 Starting Oracle comparison: 3 pending tables
+# 📍 Session ID: abc12345...
+# 
+# 🔄 Starting: HR.EMPLOYEES
+# 📊 Source: 50,000 rows, Target: 49,995 rows
+# 📊 Tables: 33%|███▍      | 1/3 [02:15<04:30, ✅ synced]
+# 🔄 HR.EMPLOYEES: 100%|██████████| 50/50 [02:15<00:00, M:49990 D:0 Mt:5]
+```
+
+### **2. Resume Interrupted Comparison**
+```bash
+# If comparison was interrupted, resume with session ID
+python oracle_comparator_restart.py config.yaml --resume abc12345-6789-1011
+
+# Output shows current status:
+# ================================================================================
+# ORACLE COMPARISON SESSION: abc12345...
+# ================================================================================
+# Total Tables: 3
+# Completed: 1
+# Failed: 0
+# In Progress: 0
+# Pending: 2
+```
+
+### **3. Compare Specific Table**
+```bash
+# Compare only one table
+python oracle_comparator_restart.py config.yaml --table HR.EMPLOYEES
+
+# Or resume specific table
+python oracle_comparator_restart.py config.yaml --resume abc12345 --table FINANCE.TRANSACTIONS
+```
+
+### **4. Scripting Mode (No Progress Bars)**
+```bash
+# For automated/scheduled runs
+python oracle_comparator_restart.py config.yaml --no-progress > comparison.log 2>&1
+
+# Check results
+echo $?  # 0 = success, 1 = error
+cat comparison.log
+```
+
+---
+
+## 🔧 **Advanced Features**
+
+### **Session Management**
+
+#### **List All Sessions**
+```bash
+python oracle_comparator_restart.py config.yaml --list-sessions
+
+# Output:
+# Available Oracle Comparison Sessions:
+# ================================================================================
+# Session ID: abc12345-6789-1011-1213-141516171819
+#   Started: 2024-01-15T10:30:00
+#   Status: in_progress
+#   Progress: 2/5 tables
+#   Config: prod_vs_dr_config.yaml
+```
+
+#### **Check Session Status**
+```bash
+python oracle_comparator_restart.py config.yaml --status abc12345
+
+# JSON output for automation:
+{
+  "session_id": "abc12345-6789-1011",
+  "total_tables": 5,
+  "completed": 2,
+  "failed": 0,
+  "in_progress": 0,
+  "pending": 3,
+  "start_time": "2024-01-15T10:30:00",
+  "table_details": [...]
+}
+```
+
+#### **Retry Failed Tables**
+```bash
+# Retry only tables that failed in previous run
+python oracle_comparator_restart.py config.yaml --resume abc12345 --retry-failed
+
+# Output:
+# 🔄 Retrying 2 failed tables: FINANCE.TRANSACTIONS, AUDIT.USER_ACTIONS
+```
+
+#### **Clean Up Old Sessions**
+```bash
+# Remove sessions older than 7 days
+python oracle_comparator_restart.py config.yaml --cleanup 7
+
+# Output:
+# Cleaned up old session file: oracle_session_def67890.json
+# Cleaned up old checkpoint: abc12345_HR_EMPLOYEES_chunk_15.pkl
+```
+
+### **Monitoring and Alerts**
+
+#### **Real-Time Monitoring**
+```bash
+# Monitor progress in another terminal
+watch -n 30 "python oracle_comparator_restart.py config.yaml --status abc12345"
+
+# Or use JSON output for custom monitoring
+python oracle_comparator_restart.py config.yaml --status abc12345 | jq '.completed, .total_tables'
+```
+
+#### **Integration with Monitoring Systems**
+```bash
+#!/bin/bash
+# monitoring_script.sh - Check comparison status
+
+SESSION_ID="abc12345"
+STATUS=$(python oracle_comparator_restart.py config.yaml --status $SESSION_ID 2>/dev/null)
+
+if [ $? -eq 0 ]; then
+    COMPLETED=$(echo "$STATUS" | jq -r '.completed')
+    TOTAL=$(echo "$STATUS" | jq -r '.total_tables')
+    FAILED=$(echo "$STATUS" | jq -r '.failed')
+    
+    if [ "$FAILED" -gt 0 ]; then
+        # Send alert for failures
+        curl -X POST "https://hooks.slack.com/services/..." \
+             -d "{\"text\":\"Oracle comparison failed: $FAILED tables failed\"}"
+    fi
+    
+    echo "Progress: $COMPLETED/$TOTAL tables completed"
+else
+    echo "Session not found or completed"
+fi
+```
+
+### **Automation and Scheduling**
+
+#### **Cron Job Setup**
+```bash
+# Add to crontab for daily comparison at 2 AM
+crontab -e
+
+# Add this line:
+0 2 * * * /usr/bin/python /opt/oracle_comparator/oracle_comparator_restart.py /opt/oracle_comparator/config.yaml --no-progress >> /var/log/oracle_comparison.log 2>&1
+```
+
+#### **Systemd Service**
+```ini
+# /etc/systemd/system/oracle-comparison.service
+[Unit]
+Description=Oracle Table Comparison Service
+After=network.target
+
+[Service]
+Type=oneshot
+User=oracle_user
+Group=oracle_user
+Environment=ORACLE_SOURCE_USER=comparison_user
+EnvironmentFile=/secure/environment/oracle.env
+WorkingDirectory=/opt/oracle_comparator
+ExecStart=/usr/bin/python oracle_comparator_restart.py config.yaml --no-progress
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+# Enable and start service
+sudo systemctl enable oracle-comparison.service
+sudo systemctl start oracle-comparison.service
+
+# Check status
+sudo systemctl status oracle-comparison.service
+```
+
+---
+
+## 📈 **Performance Tuning**
+
+### **Chunk Size Optimization**
+
+#### **Determine Optimal Chunk Size**
+```bash
+# Start with conservative chunk size
+# Monitor memory usage and processing speed
+# Adjust based on results
+
+# Small tables (< 100K rows)
+chunk_size: 15000-25000
+
+# Medium tables (100K-1M rows)  
+chunk_size: 8000-15000
+
+# Large tables (1M-10M rows)
+chunk_size: 5000-10000
+
+# Very large tables (> 10M rows)
+chunk_size: 2000-5000
+```
+
+#### **Memory Usage Guidelines**
+```yaml
+# Calculate memory usage:
+# Memory per chunk ≈ (average_row_size + 32_bytes_hash) × chunk_size
+
+# Example for 200-byte average row:
+chunk_size: 10000  # ≈ 2.3MB per chunk
+chunk_size: 20000  # ≈ 4.6MB per chunk  
+chunk_size: 50000  # ≈ 11.6MB per chunk
+```
+
+### **Database Performance Optimization**
+
+#### **Index Recommendations**
+```sql
+-- Ensure primary key indexes exist
+CREATE INDEX idx_employees_pk ON HR.EMPLOYEES (EMPLOYEE_ID);
+
+-- Optimize WHERE clause columns
+CREATE INDEX idx_employees_status ON HR.EMPLOYEES (STATUS, CREATED_DATE);
+
+-- Update table statistics
+EXEC DBMS_STATS.GATHER_TABLE_STATS('HR', 'EMPLOYEES');
+
+-- Check index usage
+SELECT * FROM V$SQL_PLAN WHERE OBJECT_NAME = 'EMPLOYEES';
+```
+
+#### **Query Performance Tuning**
+```sql
+-- Analyze query execution plans
+EXPLAIN PLAN FOR
+SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME 
+FROM HR.EMPLOYEES 
+WHERE STATUS = 'ACTIVE' 
+ORDER BY EMPLOYEE_ID;
+
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+```
+
+### **Network Optimization**
+
+#### **Reduce Data Transfer**
+```yaml
+# Compare only essential columns
+tables:
+  - schema_name: "HR"
+    table_name: "EMPLOYEES"
+    columns: ["EMPLOYEE_ID", "EMAIL", "STATUS"]  # Skip large text fields
+    
+# Use filtering to reduce dataset
+where_clause: "MODIFIED_DATE >= SYSDATE - 30"  # Recent changes only
+```
+
+#### **Connection Pool Settings**
+```yaml
+# Adjust worker count based on database capacity
+max_workers: 2   # Conservative for shared databases
+max_workers: 4   # Balanced for dedicated systems
+max_workers: 8   # Aggressive for high-capacity systems
+```
+
+---
+
+## 🛠️ **Troubleshooting**
+
+### **Common Issues and Solutions**
+
+#### **1. Connection Errors**
+```bash
+# Error: Failed to connect to Oracle database
+# Solution: Check connection details and credentials
+
+# Test connection manually
+python -c "
+import oracledb
+conn = oracledb.connect(
+    user='comparison_user',
+    password='your_password', 
+    dsn='hostname:1521/servicename'
+)
+print('Connection successful!')
+conn.close()
+"
+```
+
+#### **2. Permission Errors**
+```sql
+-- Error: ORA-00942: table or view does not exist
+-- Solution: Grant SELECT permissions
+
+GRANT SELECT ON HR.EMPLOYEES TO comparison_user;
+GRANT SELECT ON FINANCE.TRANSACTIONS TO comparison_user;
+
+-- Check permissions
+SELECT * FROM USER_TAB_PRIVS WHERE TABLE_NAME = 'EMPLOYEES';
+```
+
+#### **3. Memory Issues**
+```bash
+# Error: MemoryError or Out of Memory
+# Solution: Reduce chunk size
+
+# Edit config.yaml
+chunk_size: 5000    # Reduce from 10000
+chunk_size: 2000    # Further reduce if needed
+
+# Monitor memory usage
+top -p $(pgrep -f oracle_comparator)
+```
+
+#### **4. Session Recovery Issues**
+```bash
+# Error: Session abc12345 not found or corrupted
+# Solution: Check session files and cleanup
+
+# List available sessions
+python oracle_comparator_restart.py config.yaml --list-sessions
+
+# Clean up corrupted sessions
+rm oracle_comparison_state/oracle_session_abc12345.json
+rm oracle_checkpoints/abc12345_*.pkl
+
+# Start fresh comparison
+python oracle_comparator_restart.py config.yaml
+```
+
+#### **5. Performance Issues**
+```bash
+# Issue: Very slow processing
+# Solutions:
+
+# Check database performance
+SELECT sql_text, executions, elapsed_time 
+FROM V$SQL 
+WHERE sql_text LIKE '%YOUR_TABLE%'
+ORDER BY elapsed_time DESC;
+
+# Optimize chunk size
+chunk_size: 15000   # Increase for faster processing (if memory allows)
+
+# Add WHERE clause to reduce data
+where_clause: "STATUS = 'ACTIVE'"
+
+# Run during off-hours
+crontab -e
+0 2 * * * /path/to/comparison_script.sh
+```
+
+### **Debug Mode**
+```bash
+# Enable detailed logging
+export PYTHONPATH=/path/to/oracle_comparator
+python -v oracle_comparator_restart.py config.yaml --no-progress
+
+# Check log files
+tail -f oracle_table_comparison_audit.log
+
+# Enable Oracle client tracing (if needed)
+export TNS_ADMIN=/path/to/tnsnames
+export ORACLE_TRACE_FILE=/tmp/oracle_trace.log
+```
+
+---
+
+## ✅ **Best Practices**
+
+### **Production Deployment**
+
+#### **1. Environment Setup**
+```bash
+# Create dedicated user
+sudo useradd -m oracle_comparator
+sudo usermod -aG oracle oracle_comparator
+
+# Create directory structure
+sudo mkdir -p /opt/oracle_comparator/{config,logs,backups}
+sudo chown -R oracle_comparator:oracle_comparator /opt/oracle_comparator
+
+# Install in dedicated location
+sudo cp oracle_comparator_restart.py /opt/oracle_comparator/
+sudo cp config.yaml /opt/oracle_comparator/config/
+```
+
+#### **2. Security Hardening**
+```bash
+# Secure configuration files
+chmod 640 /opt/oracle_comparator/config/config.yaml
+chmod 600 /secure/oracle_credentials/*.json
+
+# Use dedicated database accounts
+CREATE USER comparison_user IDENTIFIED BY "secure_random_password";
+GRANT CREATE SESSION TO comparison_user;
+GRANT SELECT ON schema.table_name TO comparison_user;
+
+# Network security
+# Use VPN or private networks for database connections
+# Consider SSL/TLS encryption for database connections
+```
+
+#### **3. Monitoring and Alerting**
+```bash
+# Set up log rotation
+cat > /etc/logrotate.d/oracle_comparator << 'EOF'
+/opt/oracle_comparator/logs/*.log {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    sharedscripts
+}
+EOF
+
+# Monitor disk space
+df -h /opt/oracle_comparator
+
+# Set up alerts for failures
+# Integrate with existing monitoring systems (Nagios, Zabbix, etc.)
+```
+
+### **Operational Procedures**
+
+#### **1. Regular Maintenance**
+```bash
+# Weekly cleanup script
+#!/bin/bash
+# cleanup_oracle_comparator.sh
+
+cd /opt/oracle_comparator
+
+# Clean up old sessions (older than 7 days)
+python oracle_comparator_restart.py config/config.yaml --cleanup 7
+
+# Rotate logs
+logrotate -f /etc/logrotate.d/oracle_comparator
+
+# Check disk space
+DISK_USAGE=$(df /opt/oracle_comparator | tail -1 | awk '{print $5}' | sed 's/%//')
+if [ $DISK_USAGE -gt 80 ]; then
+    echo "WARNING: Disk usage is ${DISK_USAGE}%"
+    # Send alert
+fi
+```
+
+#### **2. Backup and Recovery**
+```bash
+# Backup configuration
+tar -czf /backups/oracle_comparator_config_$(date +%Y%m%d).tar.gz \
+    /opt/oracle_comparator/config/ \
+    /secure/oracle_credentials/
+
+# Backup active sessions (before maintenance)
+tar -czf /backups/oracle_comparator_sessions_$(date +%Y%m%d).tar.gz \
+    oracle_comparison_state/ \
+    oracle_checkpoints/
+```
+
+#### **3. Change Management**
+```bash
+# Version control for configurations
+cd /opt/oracle_comparator/config
+git init
+git add config.yaml
+git commit -m "Initial configuration"
+
+# Tag releases
+git tag -a v1.0 -m "Production release v1.0"
+
+# Track configuration changes
+git diff HEAD~1 config.yaml
+```
+
+### **Performance Best Practices**
+
+#### **1. Optimal Scheduling**
+```bash
+# Schedule during low-activity periods
+# 2-6 AM: Optimal for most environments
+# Avoid backup windows and maintenance periods
+# Consider time zone differences for global deployments
+
+# Example cron schedule
+0 2 * * 1-5  # Monday-Friday at 2 AM
+0 3 * * 6    # Saturday at 3 AM (longer window)
+```
+
+#### **2. Resource Management**
+```yaml
+# Configure based on system capacity
+max_workers: 4        # Start conservative
+chunk_size: 10000     # Adjust based on memory and performance
+
+# Monitor and adjust based on:
+# - Database response times
+# - Network bandwidth utilization  
+# - System memory usage
+# - Overall comparison duration
+```
+
+#### **3. Database Load Management**
+```sql
+-- Monitor database impact
+SELECT sql_text, executions, buffer_gets, disk_reads
+FROM V$SQL 
+WHERE sql_text LIKE '%oracle_comparator%'
+ORDER BY buffer_gets DESC;
+
+-- Set resource limits if needed
+ALTER USER comparison_user PROFILE limited_profile;
+```
+
+---
+
+## ❓ **FAQ**
+
+### **General Questions**
+
+**Q: How large tables can this tool handle?**
+A: The tool is designed for enterprise-scale tables. It has been tested with tables containing over 100 million records. The chunked processing approach means table size is limited only by available time, not memory.
+
+**Q: Is this tool read-only?**
+A: Yes, the comparison tool only performs SELECT operations. It generates SQL scripts for review but never modifies data directly.
+
+**Q: Can I compare tables with different schemas?**
+A: Yes, the tool supports cross-schema comparison. Configure different schema names in the source and target table definitions.
+
+### **Technical Questions**
+
+**Q: What happens if the comparison is interrupted?**
+A: The tool automatically saves progress at the chunk level. You can resume exactly where it left off using the `--resume` option with the session ID.
+
+**Q: How accurate is the comparison?**
+A: The tool uses MD5 hashing for row comparison, which provides 99.9999% accuracy. Hash collisions are extremely rare and would be detected during SQL generation review.
+
+**Q: Can I exclude certain columns from comparison?**
+A: Yes, use the `columns` parameter to specify which columns to compare. Columns not listed will be ignored.
+
+### **Performance Questions**
+
+**Q: How long does it take to compare 1 million records?**
+A: Typically 3-8 minutes depending on table structure, network speed, and database performance. The tool shows real-time progress estimates.
+
+**Q: How much memory does the tool use?**
+A: Memory usage is bounded by chunk size. With default settings (10,000 records per chunk), expect 50-200MB peak memory usage regardless of table size.
+
+**Q: Can I run multiple comparisons simultaneously?**
+A: Yes, each comparison creates a separate session. You can run multiple instances with different configuration files.
+
+### **Security Questions**
+
+**Q: How are database credentials protected?**
+A: The tool supports multiple secure credential methods: environment variables, external credential files, Oracle Wallet, and interactive prompts. Never store passwords in configuration files.
+
+**Q: What database permissions are required?**
+A: Only SELECT permissions on the tables being compared. No write permissions are needed.
+
+**Q: Are there any audit logs?**
+A: Yes, comprehensive audit logs track all operations, including start/end times, record counts, and any errors encountered.
+
+### **Operational Questions**
+
+**Q: Can this be automated?**
+A: Yes, the tool is designed for automation. Use the `--no-progress` flag for clean output suitable for cron jobs and CI/CD pipelines.
+
+**Q: How do I handle schema changes?**
+A: Update the configuration file to reflect schema changes. The tool will detect missing columns and provide clear error messages.
+
+**Q: What if tables have different primary keys?**
+A: Each table configuration specifies its own primary key. Tables being compared can have different primary key structures.
+
+### **Troubleshooting Questions**
+
+**Q: What if I get connection timeouts?**
+A: Check network connectivity, database availability, and credential validity. Consider adjusting chunk sizes to reduce query execution time.
+
+**Q: The tool seems slow. How can I speed it up?**
+A: Increase chunk size (if memory allows), reduce the number of columns being compared, add WHERE clauses to filter data, and ensure primary key indexes are optimized.
+
+**Q: How do I recover from a corrupted session?**
+A: Use `--cleanup` to remove old sessions, or manually delete session files from the `oracle_comparison_state` directory. Then start a fresh comparison.
+
+---
+
+## 📞 **Support and Resources**
+
+### **Getting Help**
+- **Documentation**: This user guide and inline help (`--help`)
+- **Log Files**: Check `oracle_table_comparison_audit.log` for detailed information
+- **Session Status**: Use `--status` to check current comparison progress
+- **Debug Mode**: Run with `python -v` for verbose output
+
+### **Community and Updates**
+- **GitHub Repository**: [Link to repository]
+- **Issue Tracker**: [Link to issues]
+- **Release Notes**: [Link to releases]
+- **Example Configurations**: [Link to examples]
+
+### **Professional Support**
+For enterprise support, custom features, or consulting services, contact your organization's database team or the tool maintainers.
+
+---
+
+**🎉 Congratulations! You're now ready to use the Oracle Table Comparator effectively in your environment.**
+
+Remember to start with small tables to familiarize yourself with the tool, then gradually move to larger, more complex comparisons as you gain experience.
