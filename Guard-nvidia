@@ -1,0 +1,139 @@
+graph TD
+    %% Input and Configuration
+    A[PDF Content Input] --> B[Content Processing]
+    B --> C[NeMo Guardrails Setup]
+    
+    %% Configuration Components
+    C --> D[Configuration Files]
+    D --> D1[config.yml<br/>LLM Settings]
+    D --> D2[rails.co<br/>Colang Scripts]
+    D --> D3[kb/<br/>Knowledge Base]
+    
+    %% Colang Script Definition
+    D2 --> E[Define User Flows]
+    E --> E1[define user express inappropriate]
+    E --> E2[define user ask sensitive question]
+    E --> E3[define user request financial advice]
+    
+    %% Bot Response Definition
+    E1 --> F[Define Bot Responses]
+    E2 --> F
+    E3 --> F
+    F --> F1[define bot refuse inappropriate]
+    F --> F2[define bot request clarification]
+    F --> F3[define bot provide compliant response]
+    
+    %% Flow Definition
+    F1 --> G[Define Conversation Flows]
+    F2 --> G
+    F3 --> G
+    G --> G1[define flow handle inappropriate input]
+    G --> G2[define flow handle sensitive questions]
+    G --> G3[define flow financial guidance]
+    
+    %% Rails Initialization
+    G --> H[Initialize LLM Rails]
+    H --> I[RailsConfig Creation]
+    I --> J[LLMRails Instance]
+    
+    %% Input Processing
+    B --> K[User Message Input]
+    K --> L{Input Rails<br/>Processing}
+    
+    %% Input Rails Components
+    L --> L1[Intent Recognition]
+    L --> L2[Context Analysis]
+    L --> L3[Pattern Matching]
+    L --> L4[Flow Determination]
+    
+    %% Flow Matching
+    L1 --> M{Flow Matching<br/>Engine}
+    L2 --> M
+    L3 --> M
+    L4 --> M
+    
+    %% Flow Execution Paths
+    M -->|Inappropriate Content| N[Execute Refuse Flow]
+    M -->|Sensitive Question| O[Execute Clarification Flow]
+    M -->|Normal Query| P[Execute Standard Flow]
+    M -->|Financial Advice| Q[Execute Compliance Flow]
+    
+    %% Refuse Flow
+    N --> N1[bot refuse inappropriate content]
+    N1 --> N2[Stop Processing]
+    N2 --> R[Log Interaction]
+    
+    %% Clarification Flow
+    O --> O1[bot request clarification]
+    O1 --> O2[Provide Alternative Options]
+    O2 --> R
+    
+    %% Compliance Flow
+    Q --> Q1[Check Compliance Rules]
+    Q1 --> Q2{Compliant<br/>Request?}
+    Q2 -->|Yes| Q3[bot provide compliant response]
+    Q2 -->|No| Q4[bot refuse financial advice]
+    Q3 --> R
+    Q4 --> R
+    
+    %% Standard Flow
+    P --> S[LLM Processing]
+    S --> T[Generate Response]
+    T --> U{Output Rails<br/>Validation}
+    
+    %% Output Rails
+    U --> U1[Content Safety Check]
+    U --> U2[Compliance Verification]
+    U --> U3[Brand Safety Review]
+    U --> U4[Fact Checking]
+    
+    %% Output Processing
+    U1 --> V{Output<br/>Validation}
+    U2 --> V
+    U3 --> V
+    U4 --> V
+    
+    V -->|Pass| W[Approved Response]
+    V -->|Fail| X[Response Modification]
+    X --> Y[Reprocess with Rails]
+    Y --> U
+    
+    %% Final Output
+    W --> R[Log Interaction]
+    R --> Z[Response Delivery]
+    
+    %% Analytics and Monitoring
+    R --> AA[Analytics Dashboard]
+    AA --> AA1[Conversation Flow Analytics]
+    AA --> AA2[Rails Effectiveness Metrics]
+    AA --> AA3[User Interaction Patterns]
+    AA --> AA4[Compliance Monitoring]
+    
+    %% Configuration Management
+    AA --> BB[Configuration Updates]
+    BB --> BB1[Add New Flows]
+    BB --> BB2[Update Response Templates]
+    BB --> BB3[Modify Rail Conditions]
+    BB --> BB4[Adjust Thresholds]
+    
+    %% Integration Options
+    Z --> CC[Integration Points]
+    CC --> CC1[Chat Applications]
+    CC --> CC2[Voice Assistants]
+    CC --> CC3[Customer Service Bots]
+    CC --> CC4[Internal Support Tools]
+    
+    %% Styling
+    classDef configLayer fill:#e8f5e8
+    classDef flowLayer fill:#f3e5f5
+    classDef processingLayer fill:#fff3e0
+    classDef validationLayer fill:#e3f2fd
+    classDef outputLayer fill:#fafafa
+    classDef analyticsLayer fill:#ffebee
+    
+    class C,D,D1,D2,D3 configLayer
+    class E,E1,E2,E3,F,F1,F2,F3,G,G1,G2,G3 flowLayer
+    class H,I,J,L,L1,L2,L3,L4,M processingLayer
+    class U,U1,U2,U3,U4,V validationLayer
+    class W,X,Y,Z,CC,CC1,CC2,CC3,CC4 outputLayer
+    class R,AA,AA1,AA2,AA3,AA4,BB,BB1,BB2,BB3,BB4 analyticsLayer
