@@ -1,0 +1,98 @@
+graph TD
+    %% Input
+    A[PDF Content Input] --> B[Content Processing]
+    B --> C[Initialize Guardrails AI]
+    
+    %% Guardrails Hub Setup
+    C --> D[Guardrails Hub CLI]
+    D --> D1[Install DetectPII]
+    D --> D2[Install ToxicLanguage]
+    D --> D3[Install SecretsPresent]
+    D --> D4[Install RegexMatch]
+    
+    %% Guard Creation
+    D1 --> E[Create Input Guard]
+    D2 --> E
+    D3 --> E
+    D4 --> E
+    
+    %% Input Validation
+    E --> F{Input Guard<br/>Validation}
+    F -->|Pass| G[Content Approved for Processing]
+    F -->|Fail| H[Input Violation Detected]
+    
+    %% Violation Handling
+    H --> H1[Log Violation Details]
+    H --> H2[Apply OnFailAction]
+    H2 --> H2a[EXCEPTION: Block Processing]
+    H2 --> H2b[FILTER: Remove Violations]
+    H2 --> H2c[REASK: Request Modification]
+    
+    %% Rules and Dynamic Prompts
+    G --> I[Apply Business Rules]
+    I --> J[Generate Dynamic Prompts]
+    J --> K[Create Output Guard]
+    
+    %% Output Guard Setup
+    K --> K1[Toxicity Validation]
+    K --> K2[Factual Accuracy Check]
+    K --> K3[Brand Safety Validation]
+    
+    %% LLM Integration
+    J --> L[LLM API Call<br/>with Guards]
+    L --> M{Output Guard<br/>Validation}
+    
+    %% Output Validation Results
+    M -->|Pass| N[Validated Output]
+    M -->|Fail| O[Output Violation]
+    
+    %% Output Violation Handling
+    O --> O1[Reask LLM]
+    O --> O2[Filter Content]
+    O --> O3[Exception Handling]
+    O1 --> L
+    
+    %% Scorecard Generation
+    N --> P[Generate Validation Report]
+    H1 --> P
+    O2 --> P
+    
+    %% Report Components
+    P --> P1[Validation Status]
+    P --> P2[Risk Assessment]
+    P --> P3[Violation Summary]
+    P --> P4[Recommendations]
+    
+    %% Final Output
+    P1 --> Q[Final Scorecard]
+    P2 --> Q
+    P3 --> Q
+    P4 --> Q
+    
+    %% Performance Metrics
+    Q --> R[Performance Metrics]
+    R --> R1[Latency Tracking]
+    R --> R2[Validation Success Rate]
+    R --> R3[Guard Effectiveness]
+    
+    %% Integration Points
+    Q --> S[Integration Options]
+    S --> S1[REST API Server]
+    S --> S2[Python Library]
+    S --> S3[JavaScript Bridge]
+    S --> S4[OpenAI SDK Compatible]
+    
+    %% Styling
+    classDef inputLayer fill:#e3f2fd
+    classDef guardLayer fill:#f3e5f5
+    classDef validationLayer fill:#fff3e0
+    classDef violationLayer fill:#ffebee
+    classDef outputLayer fill:#e8f5e8
+    classDef metricsLayer fill:#fafafa
+    
+    class A,B,C inputLayer
+    class D,D1,D2,D3,D4,E,K,K1,K2,K3 guardLayer
+    class F,G,M,N validationLayer
+    class H,H1,H2,H2a,H2b,H2c,O,O1,O2,O3 violationLayer
+    class P,P1,P2,P3,P4,Q outputLayer
+    class R,R1,R2,R3,S,S1,S2,S3,S4 metricsLayer
