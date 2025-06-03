@@ -1,0 +1,198 @@
+graph TD
+    %% Foundation Setup
+    A[Requirements Analysis] --> B[Architecture Design]
+    B --> C[Technology Stack Selection]
+    C --> C1[Python/FastAPI Backend]
+    C --> C2[PostgreSQL Database]
+    C --> C3[Redis Caching]
+    C --> C4[Docker Containerization]
+    
+    %% Core Framework Development
+    C --> D[Core Framework Development]
+    D --> D1[Base Validator Interface]
+    D --> D2[Guard Management System]
+    D --> D3[Rule Engine Framework]
+    D --> D4[Plugin Architecture]
+    
+    %% Validator Development
+    D1 --> E[Custom Validator Development]
+    E --> E1[Regex Pattern Validator]
+    E --> E2[ML-based Classifiers]
+    E --> E3[Dictionary-based Filters]
+    E --> E4[Statistical Analyzers]
+    
+    %% Banking-Specific Validators
+    E --> F[Banking-Specific Validators]
+    F --> F1[PII Detection Module]
+    F --> F2[Financial Compliance Checker]
+    F --> F3[AML Pattern Detection]
+    F --> F4[Credit Card Validator]
+    F --> F5[SSN Pattern Matcher]
+    
+    %% ML Model Training
+    E2 --> G[ML Model Training Pipeline]
+    G --> G1[Data Collection & Labeling]
+    G --> G2[Feature Engineering]
+    G --> G3[Model Training]
+    G --> G4[Model Validation]
+    G --> G5[Model Deployment]
+    
+    %% Content Processing Pipeline
+    F --> H[Content Processing Pipeline]
+    H --> H1[Text Preprocessing]
+    H --> H2[Tokenization]
+    H --> H3[Feature Extraction]
+    H --> H4[Pattern Recognition]
+    
+    %% Validation Engine
+    H --> I[Validation Engine Core]
+    I --> I1[Sequential Validation]
+    I --> I2[Parallel Processing]
+    I --> I3[Result Aggregation]
+    I --> I4[Confidence Scoring]
+    
+    %% Decision Framework
+    I --> J[Decision Framework]
+    J --> J1[Rule-based Logic]
+    J --> J2[Threshold Management]
+    J --> J3[Weighted Scoring]
+    J --> J4[Override Mechanisms]
+    
+    %% Input Processing Flow
+    A1[PDF Content Input] --> K[Input Processing]
+    K --> K1[Content Extraction]
+    K --> K2[Format Normalization]
+    K --> K3[Metadata Generation]
+    
+    %% Validation Orchestration
+    K --> L[Validation Orchestrator]
+    L --> L1[Load Validator Configs]
+    L --> L2[Execute Validation Chain]
+    L --> L3[Collect Results]
+    L --> L4[Apply Business Logic]
+    
+    %% Individual Validators
+    L2 --> M[Validator Execution]
+    M --> M1[PII Validator]
+    M --> M2[Toxicity Classifier]
+    M --> M3[Compliance Checker]
+    M --> M4[Pattern Matcher]
+    M --> M5[Custom Business Rules]
+    
+    %% Result Processing
+    M1 --> N[Result Processing]
+    M2 --> N
+    M3 --> N
+    M4 --> N
+    M5 --> N
+    
+    N --> N1[Normalize Results]
+    N --> N2[Calculate Confidence]
+    N --> N3[Apply Weights]
+    N --> N4[Generate Explanations]
+    
+    %% Risk Assessment
+    N --> O[Risk Assessment Engine]
+    O --> O1[Aggregate Risk Score]
+    O --> O2[Risk Category Classification]
+    O --> O3[Threshold Comparison]
+    O --> O4[Decision Generation]
+    
+    %% Action Engine
+    O --> P[Action Engine]
+    P --> P1{Risk Level}
+    P1 -->|Low| Q1[Auto Approve]
+    P1 -->|Medium| Q2[Flag for Review]
+    P1 -->|High| Q3[Require Authorization]
+    P1 -->|Critical| Q4[Block & Alert]
+    
+    %% Feedback Loop
+    Q1 --> R[Action Execution]
+    Q2 --> R
+    Q3 --> R
+    Q4 --> R
+    
+    R --> R1[Log Decision]
+    R --> R2[Update Metrics]
+    R --> R3[Trigger Workflows]
+    R --> R4[Send Notifications]
+    
+    %% Learning System
+    R --> S[Learning & Adaptation]
+    S --> S1[Collect Feedback]
+    S --> S2[Performance Analysis]
+    S --> S3[Model Retraining]
+    S --> S4[Rule Optimization]
+    
+    %% Custom Database Schema
+    R1 --> T[Custom Database Design]
+    T --> T1[Validation Results Table]
+    T --> T2[Audit Trail Table]
+    T --> T3[Performance Metrics Table]
+    T --> T4[Configuration Table]
+    
+    %% API Development
+    T --> U[Custom API Development]
+    U --> U1[REST API Endpoints]
+    U --> U2[WebSocket Support]
+    U --> U3[Batch Processing API]
+    U --> U4[Admin Dashboard API]
+    
+    %% Monitoring & Analytics
+    U --> V[Custom Monitoring System]
+    V --> V1[Real-time Dashboards]
+    V --> V2[Performance Metrics]
+    V --> V3[Alert Management]
+    V --> V4[Compliance Reporting]
+    
+    %% Security Implementation
+    V --> W[Security Framework]
+    W --> W1[Authentication System]
+    W --> W2[Authorization Controls]
+    W --> W3[Encryption Modules]
+    W --> W4[Audit Logging]
+    
+    %% Deployment Pipeline
+    W --> X[Deployment System]
+    X --> X1[CI/CD Pipeline]
+    X --> X2[Container Orchestration]
+    X --> X3[Load Balancing]
+    X --> X4[Auto-scaling]
+    
+    %% Integration Framework
+    X --> Y[Integration Framework]
+    Y --> Y1[SDK Development]
+    Y --> Y2[Plugin System]
+    Y --> Y3[Webhook Support]
+    Y --> Y4[Third-party Connectors]
+    
+    %% Final Output
+    Y --> Z[Custom Guardrails System]
+    Z --> Z1[Full Feature Parity]
+    Z --> Z2[Banking-specific Features]
+    Z --> Z3[Enterprise Integration]
+    Z --> Z4[Compliance Reporting]
+    
+    %% Maintenance
+    Z --> AA[Ongoing Maintenance]
+    AA --> AA1[Bug Fixes & Updates]
+    AA --> AA2[Performance Optimization]
+    AA --> AA3[Feature Enhancements]
+    AA --> AA4[Security Patches]
+    
+    %% Styling
+    classDef foundationLayer fill:#e8f5e8
+    classDef developmentLayer fill:#f3e5f5
+    classDef validationLayer fill:#fff3e0
+    classDef processingLayer fill:#e3f2fd
+    classDef decisionLayer fill:#fff8e1
+    classDef systemLayer fill:#fafafa
+    classDef deploymentLayer fill:#ffebee
+    
+    class A,B,C,C1,C2,C3,C4 foundationLayer
+    class D,D1,D2,D3,D4,E,E1,E2,E3,E4,F,F1,F2,F3,F4,F5 developmentLayer
+    class G,G1,G2,G3,G4,G5,H,H1,H2,H3,H4,I,I1,I2,I3,I4 validationLayer
+    class K,K1,K2,K3,L,L1,L2,L3,L4,M,M1,M2,M3,M4,M5 processingLayer
+    class N,N1,N2,N3,N4,O,O1,O2,O3,O4,P,P1,Q1,Q2,Q3,Q4 decisionLayer
+    class R,R1,R2,R3,R4,S,S1,S2,S3,S4,T,T1,T2,T3,T4,U,U1,U2,U3,U4 systemLayer
+    class V,V1,V2,V3,V4,W,W1,W2,W3,W4,X,X1,X2,X3,X4,Y,Y1,Y2,Y3,Y4,Z,Z1,Z2,Z3,Z4,AA,AA1,AA2,AA3,AA4 deploymentLayer
