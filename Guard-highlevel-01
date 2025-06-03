@@ -1,0 +1,231 @@
+graph TD
+    %% Input Sources
+    A1[PDF Documents] --> B[Enterprise API Gateway]
+    A2[Chat Messages] --> B
+    A3[Document Processing] --> B
+    A4[Voice Transcripts] --> B
+    
+    %% Load Balancing & Security
+    B --> C[Load Balancer + WAF]
+    C --> D[Authentication & Authorization]
+    D --> E[Rate Limiting & Throttling]
+    
+    %% Routing Engine
+    E --> F{Intelligent Routing Engine}
+    
+    %% Content Type Routing
+    F -->|Document Processing| G[Document Pipeline]
+    F -->|Conversational AI| H[Chat Pipeline]
+    F -->|Content Moderation| I[Safety Pipeline]
+    F -->|Financial Validation| J[Banking Pipeline]
+    
+    %% Document Pipeline - Guardrails AI Primary
+    G --> G1[Guardrails AI Framework]
+    G1 --> G2[Input Guards]
+    G2 --> G2a[DetectPII Validator]
+    G2 --> G2b[ToxicLanguage Validator]
+    G2 --> G2c[SecretsPresent Validator]
+    G2 --> G2d[RegexMatch Validator]
+    
+    G2a --> G3[Document Validation Results]
+    G2b --> G3
+    G2c --> G3
+    G2d --> G3
+    
+    %% Chat Pipeline - NeMo Guardrails Primary
+    H --> H1[NVIDIA NeMo Guardrails]
+    H1 --> H2[Colang Flow Engine]
+    H2 --> H2a[define user inappropriate]
+    H2 --> H2b[define user sensitive question]
+    H2 --> H2c[define flow banking assistance]
+    
+    H2a --> H3[Conversation Flow Results]
+    H2b --> H3
+    H2c --> H3
+    
+    %% Safety Pipeline - OpenAI Moderation Primary
+    I --> I1[OpenAI Moderation API]
+    I1 --> I2[Content Safety Analysis]
+    I2 --> I2a[Hate Speech Detection]
+    I2 --> I2b[Harassment Check]
+    I2 --> I2c[Violence Detection]
+    I2 --> I2d[Sexual Content Filter]
+    
+    I2a --> I3[Safety Analysis Results]
+    I2b --> I3
+    I2c --> I3
+    I2d --> I3
+    
+    %% Banking Pipeline - Custom Validators Primary
+    J --> J1[Custom Banking Validators]
+    J1 --> J2[Financial Compliance Engine]
+    J2 --> J2a[FINRA Compliance Checker]
+    J2 --> J2b[BSA/AML Pattern Detection]
+    J2 --> J2c[Wire Transfer Security]
+    J2 --> J2d[SOX Audit Requirements]
+    
+    J2a --> J3[Banking Validation Results]
+    J2b --> J3
+    J2c --> J3
+    J2d --> J3
+    
+    %% Results Aggregation Layer
+    G3 --> K[Results Aggregation Engine]
+    H3 --> K
+    I3 --> K
+    J3 --> K
+    
+    %% Cross-Validation Layer
+    K --> L[Cross-Framework Validation]
+    L --> L1[Consistency Checks]
+    L --> L2[Conflict Resolution]
+    L --> L3[Confidence Scoring]
+    L --> L4[Result Harmonization]
+    
+    %% Risk Assessment Engine
+    L --> M[Enterprise Risk Assessment]
+    M --> M1[Multi-Framework Risk Score]
+    M --> M2[Weighted Validation Results]
+    M --> M3[Business Rule Application]
+    M --> M4[Escalation Thresholds]
+    
+    %% Decision Engine
+    M --> N{Enterprise Decision Engine}
+    
+    %% Decision Paths
+    N -->|All Frameworks Pass<br/>Low Risk 0-25| O1[Auto Approval Path]
+    N -->|Minor Violations<br/>Medium Risk 26-50| O2[Enhanced Monitoring Path]
+    N -->|Significant Issues<br/>High Risk 51-75| O3[Human Review Path]
+    N -->|Critical Violations<br/>Critical Risk 76-100| O4[Immediate Block Path]
+    
+    %% Auto Approval Path
+    O1 --> P1[Apply Business Rules]
+    P1 --> P2[Generate Dynamic Prompts]
+    P2 --> P3[LLM Integration with Output Guards]
+    P3 --> P4[Final Content Generation]
+    
+    %% Enhanced Monitoring Path
+    O2 --> Q1[Flag for Monitoring]
+    Q1 --> Q2[Apply Additional Guards]
+    Q2 --> Q3[Enhanced Logging]
+    Q3 --> P2
+    
+    %% Human Review Path
+    O3 --> R1[Queue for Human Review]
+    R1 --> R2[Compliance Team Notification]
+    R2 --> R3[Manual Review Interface]
+    R3 --> R4{Human Decision}
+    R4 -->|Approve| P1
+    R4 -->|Reject| S1[Content Blocked]
+    R4 -->|Modify| P1
+    
+    %% Immediate Block Path
+    O4 --> S1[Content Blocked]
+    S1 --> S2[Critical Alert System]
+    S2 --> S2a[PagerDuty Alert]
+    S2 --> S2b[SIEM Integration]
+    S2 --> S2c[Compliance Team Alert]
+    S2 --> S2d[Executive Notification]
+    
+    %% Enterprise Audit System
+    P4 --> T[Enterprise Audit System]
+    S1 --> T
+    T --> T1[Immutable Audit Records]
+    T --> T2[Digital Signatures]
+    T --> T3[Compliance Logging]
+    T --> T4[Performance Metrics]
+    
+    %% Real-time Monitoring
+    T --> U[Real-time Monitoring Stack]
+    U --> U1[Prometheus Metrics]
+    U --> U2[Grafana Dashboards]
+    U --> U3[ELK Stack Logging]
+    U --> U4[Custom Analytics]
+    
+    %% Data Storage Layer
+    U --> V[Enterprise Data Layer]
+    V --> V1[(PostgreSQL Cluster<br/>Audit & Compliance)]
+    V --> V2[(Redis Cluster<br/>Performance Cache)]
+    V --> V3[(Kafka Streams<br/>Event Processing)]
+    V --> V4[(InfluxDB<br/>Time Series Metrics)]
+    
+    %% Integration Layer
+    V --> W[Enterprise Integration Hub]
+    W --> W1[Core Banking Systems]
+    W --> W2[Customer Service Platforms]
+    W --> W3[Risk Management Systems]
+    W --> W4[Regulatory Reporting]
+    W --> W5[SIEM Integration]
+    W --> W6[Identity Management]
+    
+    %% Output Layer
+    W --> X[Multi-Channel Output]
+    X --> X1[REST API Responses]
+    X --> X2[WebSocket Streams]
+    X --> X3[Batch Processing Results]
+    X --> X4[Webhook Notifications]
+    
+    %% Framework Health Monitoring
+    G1 --> Y[Framework Health Monitor]
+    H1 --> Y
+    I1 --> Y
+    J1 --> Y
+    
+    Y --> Y1[Guardrails AI Health]
+    Y --> Y2[NeMo Guardrails Health]
+    Y --> Y3[OpenAI API Health]
+    Y --> Y4[Custom Validators Health]
+    
+    %% Failover & Redundancy
+    Y --> Z[Failover Management]
+    Z --> Z1[Framework Redundancy]
+    Z --> Z2[Graceful Degradation]
+    Z --> Z3[Circuit Breaker Pattern]
+    Z --> Z4[Auto-recovery Mechanisms]
+    
+    %% Performance Optimization
+    Z --> AA[Performance Optimization]
+    AA --> AA1[Intelligent Caching]
+    AA --> AA2[Request Batching]
+    AA --> AA3[Async Processing]
+    AA --> AA4[Resource Pooling]
+    
+    %% Security Layer
+    AA --> BB[Enterprise Security]
+    BB --> BB1[Zero Trust Network]
+    BB --> BB2[End-to-end Encryption]
+    BB --> BB3[Secret Management]
+    BB --> BB4[Access Control]
+    
+    %% Compliance Reporting
+    BB --> CC[Automated Compliance]
+    CC --> CC1[SOX Reporting]
+    CC --> CC2[GDPR Compliance]
+    CC --> CC3[PCI-DSS Validation]
+    CC --> CC4[Regulatory Submissions]
+    
+    %% Continuous Improvement
+    CC --> DD[Continuous Improvement]
+    DD --> DD1[ML Model Updates]
+    DD --> DD2[Rule Optimization]
+    DD --> DD3[Performance Tuning]
+    DD --> DD4[Framework Evolution]
+    
+    %% Styling
+    classDef inputLayer fill:#e3f2fd
+    classDef routingLayer fill:#f3e5f5
+    classDef frameworkLayer fill:#fff3e0
+    classDef aggregationLayer fill:#e8f5e8
+    classDef decisionLayer fill:#fff8e1
+    classDef auditLayer fill:#fafafa
+    classDef integrationLayer fill:#ffebee
+    classDef securityLayer fill:#e1f5fe
+    
+    class A1,A2,A3,A4,B,C,D,E inputLayer
+    class F,G,H,I,J routingLayer
+    class G1,G2,G2a,G2b,G2c,G2d,H1,H2,H2a,H2b,H2c,I1,I2,I2a,I2b,I2c,I2d,J1,J2,J2a,J2b,J2c,J2d frameworkLayer
+    class K,L,L1,L2,L3,L4,M,M1,M2,M3,M4 aggregationLayer
+    class N,O1,O2,O3,O4,P1,P2,P3,P4,Q1,Q2,Q3,R1,R2,R3,R4 decisionLayer
+    class T,T1,T2,T3,T4,U,U1,U2,U3,U4,V,V1,V2,V3,V4 auditLayer
+    class W,W1,W2,W3,W4,W5,W6,X,X1,X2,X3,X4 integrationLayer
+    class BB,BB1,BB2,BB3,BB4,CC,CC1,CC2,CC3,CC4,DD,DD1,DD2,DD3,DD4 securityLayer
