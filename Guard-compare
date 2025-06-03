@@ -1,0 +1,185 @@
+graph TD
+    %% Input Layer
+    A[PDF Processing Requirements] --> B{Choose Framework Approach}
+    
+    %% Framework Options
+    B --> C[Guardrails AI]
+    B --> D[NVIDIA NeMo]
+    B --> E[OpenAI Moderation]
+    B --> F[Custom Build]
+    B --> G[Hybrid Approach]
+    
+    %% Guardrails AI Branch
+    C --> C1[Strengths]
+    C1 --> C1a[200+ Pre-built Validators]
+    C1 --> C1b[Enterprise-grade Performance]
+    C1 --> C1c[Sub-second Latency]
+    C1 --> C1d[Production Ready]
+    
+    C --> C2[Limitations]
+    C2 --> C2a[Limited Banking Rules]
+    C2 --> C2b[No Built-in Audit Trails]
+    C2 --> C2c[Custom Integration Required]
+    
+    C --> C3[Best For]
+    C3 --> C3a[General Enterprise AI]
+    C3 --> C3b[Quick Implementation]
+    C3 --> C3c[Standard Compliance]
+    
+    %% NVIDIA NeMo Branch
+    D --> D1[Strengths]
+    D1 --> D1a[Natural Conversation Control]
+    D1 --> D1b[Colang Flow Language]
+    D1 --> D1c[Advanced Dialogue Management]
+    D1 --> D1d[NVIDIA Enterprise Support]
+    
+    D --> D2[Limitations]
+    D2 --> D2a[Conversation-focused Only]
+    D2 --> D2b[Complex Configuration]
+    D2 --> D2c[Limited Document Processing]
+    
+    D --> D3[Best For]
+    D3 --> D3a[Customer Service Chatbots]
+    D3 --> D3b[Interactive AI Assistants]
+    D3 --> D3c[Conversational Guardrails]
+    
+    %% OpenAI Moderation Branch
+    E --> E1[Strengths]
+    E1 --> E1a[Simple API Integration]
+    E1 --> E1b[Pre-trained Models]
+    E1 --> E1c[Quick Setup]
+    E1 --> E1d[Reliable Content Safety]
+    
+    E --> E2[Limitations]
+    E2 --> E2a[Basic Functionality Only]
+    E2 --> E2b[No Financial Compliance]
+    E2 --> E2c[Limited Customization]
+    E2 --> E2d[Requires Additional Components]
+    
+    E --> E3[Best For]
+    E3 --> E3a[Content Safety Baseline]
+    E3 --> E3b[Proof of Concept]
+    E3 --> E3c[Simple Applications]
+    
+    %% Custom Build Branch
+    F --> F1[Strengths]
+    F1 --> F1a[Complete Control]
+    F1 --> F1b[Banking-specific Features]
+    F1 --> F1c[Custom Performance]
+    F1 --> F1d[Proprietary IP]
+    
+    F --> F2[Limitations]
+    F2 --> F2a[12+ Month Development]
+    F2 --> F2b[High Resource Requirements]
+    F2 --> F2c[Ongoing Maintenance]
+    F2 --> F2d[Higher Risk]
+    
+    F --> F3[Best For]
+    F3 --> F3a[Unique Requirements]
+    F3 --> F3b[Long-term Investment]
+    F3 --> F3c[Competitive Differentiation]
+    
+    %% Hybrid Approach Branch
+    G --> G1[Components]
+    G1 --> G1a[Guardrails AI Core]
+    G1 --> G1b[NeMo Conversations]
+    G1 --> G1c[OpenAI Safety]
+    G1 --> G1d[Custom Banking]
+    
+    G --> G2[Advantages]
+    G2 --> G2a[Best of All Worlds]
+    G2 --> G2b[Enterprise-grade Features]
+    G2 --> G2c[Banking Compliance]
+    G2 --> G2d[Scalable Architecture]
+    
+    G --> G3[Best For]
+    G3 --> G3a[Enterprise Banking]
+    G3 --> G3b[Citibank Requirements]
+    G3 --> G3c[Comprehensive Solution]
+    
+    %% Implementation Details
+    C --> H[Implementation Details]
+    H --> H1[Timeline: 2-4 weeks]
+    H --> H2[Team: 2-3 developers]
+    H --> H3[Cost: Low]
+    
+    D --> I[Implementation Details]
+    I --> I1[Timeline: 4-8 weeks]
+    I --> I2[Team: 3-5 developers]
+    I --> I3[Cost: Medium]
+    
+    E --> J[Implementation Details]
+    J --> J1[Timeline: 1-2 weeks]
+    J --> J2[Team: 1-2 developers]
+    J --> J3[Cost: Very Low]
+    
+    F --> K[Implementation Details]
+    K --> K1[Timeline: 12-18 months]
+    K --> K2[Team: 8-12 developers]
+    K --> K3[Cost: Very High]
+    
+    G --> L[Implementation Details]
+    L --> L1[Timeline: 3-6 months]
+    L --> L2[Team: 5-8 developers]
+    L --> L3[Cost: High]
+    
+    %% Requirements Assessment
+    M[Enterprise Requirements] --> M1[Performance]
+    M --> M2[Compliance]
+    M --> M3[Security]
+    M --> M4[Integration]
+    
+    %% Performance Ratings
+    M1 --> N[Framework Performance]
+    N --> N1[Guardrails AI: Excellent]
+    N --> N2[NeMo: Very Good]
+    N --> N3[OpenAI: Good]
+    N --> N4[Custom: Excellent]
+    N --> N5[Hybrid: Excellent]
+    
+    %% Compliance Ratings
+    M2 --> O[Compliance Support]
+    O --> O1[Guardrails AI: Good]
+    O --> O2[NeMo: Fair]
+    O --> O3[OpenAI: Fair]
+    O --> O4[Custom: Excellent]
+    O --> O5[Hybrid: Excellent]
+    
+    %% Security Ratings
+    M3 --> P[Security Features]
+    P --> P1[Guardrails AI: Very Good]
+    P --> P2[NeMo: Very Good]
+    P --> P3[OpenAI: Good]
+    P --> P4[Custom: Excellent]
+    P --> P5[Hybrid: Excellent]
+    
+    %% Integration Ratings
+    M4 --> Q[Integration Ease]
+    Q --> Q1[Guardrails AI: Very Good]
+    Q --> Q2[NeMo: Good]
+    Q --> Q3[OpenAI: Very Good]
+    Q --> Q4[Custom: Excellent]
+    Q --> Q5[Hybrid: Excellent]
+    
+    %% Final Recommendation
+    Q5 --> R[RECOMMENDATION FOR CITIBANK]
+    R --> R1[Primary Choice: Hybrid Approach]
+    R --> R2[Alternative: Guardrails AI + Custom]
+    R --> R3[Budget Option: Guardrails AI Only]
+    
+    %% Styling
+    classDef frameworkOption fill:#e3f2fd
+    classDef strengths fill:#e8f5e8
+    classDef limitations fill:#ffebee
+    classDef bestFor fill:#fff3e0
+    classDef implementation fill:#f3e5f5
+    classDef requirements fill:#fff8e1
+    classDef recommendation fill:#e1f5fe
+    
+    class C,D,E,F,G frameworkOption
+    class C1,C1a,C1b,C1c,C1d,D1,D1a,D1b,D1c,D1d,E1,E1a,E1b,E1c,E1d,F1,F1a,F1b,F1c,F1d,G2,G2a,G2b,G2c,G2d strengths
+    class C2,C2a,C2b,C2c,D2,D2a,D2b,D2c,E2,E2a,E2b,E2c,E2d,F2,F2a,F2b,F2c,F2d limitations
+    class C3,C3a,C3b,C3c,D3,D3a,D3b,D3c,E3,E3a,E3b,E3c,F3,F3a,F3b,F3c,G3,G3a,G3b,G3c bestFor
+    class H,H1,H2,H3,I,I1,I2,I3,J,J1,J2,J3,K,K1,K2,K3,L,L1,L2,L3 implementation
+    class M,M1,M2,M3,M4,N,N1,N2,N3,N4,N5,O,O1,O2,O3,O4,O5,P,P1,P2,P3,P4,P5,Q,Q1,Q2,Q3,Q4,Q5 requirements
+    class R,R1,R2,R3 recommendation
